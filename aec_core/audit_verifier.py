@@ -92,6 +92,34 @@ class AECAuditVerifier:
                         self.findings.append(f"CẢNH BÁO THANH TOÁN: Hàng {r} cột D không trỏ link từ Sheet QS: {c_d}")
                         self.score -= 2
 
+        # 4. Thẩm tra Sheet PHAN_TICH_VAT_TU_WBS
+        if "PHAN_TICH_VAT_TU_WBS" in wb.sheetnames:
+            ws = wb["PHAN_TICH_VAT_TU_WBS"]
+            for r in range(6, ws.max_row + 1):
+                c_d = ws.cell(r, 4).value
+                c_i = ws.cell(r, 9).value
+                if c_d and str(c_d).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+                    if "QS_DIEN_GIAI_CHI_TIET" not in str(c_d):
+                        self.findings.append(f"CẢNH BÁO VẬT TƯ: Hàng {r} cột D không trỏ link sang Sheet QS: {c_d}")
+                        self.score -= 2
+                if c_i and str(c_i).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+
+        # 5. Thẩm tra Sheet TONG_HOP_VAT_TU_TOAN_BO
+        if "TONG_HOP_VAT_TU_TOAN_BO" in wb.sheetnames:
+            ws = wb["TONG_HOP_VAT_TU_TOAN_BO"]
+            for r in range(7, ws.max_row + 1):
+                c_e = ws.cell(r, 5).value
+                c_g = ws.cell(r, 7).value
+                if c_e and str(c_e).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+                    if "SUMIF" not in str(c_e):
+                        self.findings.append(f"CẢNH BÁO BOM: Hàng {r} cột E không dùng SUMIF: {c_e}")
+                        self.score -= 2
+                if c_g and str(c_g).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+
         self.score = max(0, self.score)
         print(f"[*] Thẩm tra hoàn tất. Điểm chất lượng: {self.score}/100")
 

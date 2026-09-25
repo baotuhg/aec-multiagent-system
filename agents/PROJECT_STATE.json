@@ -93,5 +93,45 @@
       "Thử tải tĩnh động toàn cầu"
     ],
     "date_cross_check_status": "PASSED (Zero conflicts)"
+  },
+  "materials_bom_summary": {
+    "rebar_and_steel_tons": {
+      "rebar_D10_tons": 18.52,
+      "rebar_D12_tons": 4.85,
+      "rebar_D14_tons": 42.15,
+      "rebar_D16_tons": 78.40,
+      "rebar_D20_tons": 19.80,
+      "rebar_D25_tons": 64.25,
+      "rebar_D28_tons": 23.50,
+      "rebar_D32_tons": 48.60,
+      "prestressing_strand_15_2mm_tons": 29.91,
+      "prestressing_anchorage_sets": 180,
+      "steel_casing_D1300_tons": 45.60,
+      "sonic_tubes_D60_m": 2640,
+      "guardrail_handrail_m": 260.8
+    },
+    "concrete_and_minerals": {
+      "cement_pcb40_tons": 725.40,
+      "sand_gold_m3": 855.20,
+      "crushed_stone_1x2_m3": 1540.60,
+      "rubble_stone_20x30_m3": 420.00,
+      "backfill_soil_K98_m3": 1680.00,
+      "water_clean_m3": 335.00
+    },
+    "additives_and_chemicals": {
+      "superplasticizer_kg": 9850,
+      "retarder_plasticizer_kg": 3850,
+      "non_shrink_grout_sikagrout_kg": 11360,
+      "bentonite_powder_tons": 39.5
+    },
+    "accessories_and_finishes": {
+      "pot_bearings_count": 30,
+      "expansion_joints_m": 24.5,
+      "waterproofing_membrane_m2": 1780.0,
+      "asphalt_concrete_C12_5_tons": 311.5,
+      "geotextile_non_woven_m2": 756.0,
+      "drainage_gullies_sets": 24,
+      "pvc_drainage_pipes_D110_m": 84.0
+    }
   }
 }

@@ -10,19 +10,20 @@ flowchart TD
     subgraph "VĂN PHÒNG KỸ THUẬT SỐ HÓA (DIGITAL OFFICE)"
         VisionTakeoff["2. aec_vision_takeoff\n(VLM Qwen2.5-VL / Gemini Vision\nĐọc bản vẽ PDF/DWG & Đếm cấu kiện)"]
         RebarEng["3. aec_rebar_engineer\n(1D Cutting Stock Engine\nCắt thép 11.7m đề-xê < 1.5%)"]
-        CostEng["4. aec_cost_engineer\n(QS & Dự toán G_XD TT 11, 12, 13\nCẤM 100% SỐ CHẾT)"]
-        Scheduler["5. aec_lead_scheduler\n(Tiến độ MS Project & CPM Engine\nĐịnh mức ngày công TT 12)"]
-        QAQCEng["6. aec_qaqc_engineer\n(RAG Tiêu chuẩn TCVN & NĐ 207\n24 Biên bản nghiệm thu KCS)"]
+        MaterialEng["4. aec_material_estimator\n(BOM & Định mức TT 12/2021\nSắt thép từng Ø, Xi măng, Cát, Đá)"]
+        CostEng["5. aec_cost_engineer\n(QS & Dự toán G_XD TT 11, 12, 13\nCẤM 100% SỐ CHẾT)"]
+        Scheduler["6. aec_lead_scheduler\n(Tiến độ MS Project & CPM Engine\nĐịnh mức ngày công TT 12)"]
+        QAQCEng["7. aec_qaqc_engineer\n(RAG Tiêu chuẩn TCVN & NĐ 207\n24 Biên bản nghiệm thu KCS)"]
     end
     
     subgraph "GIÁM SÁT THỰC ĐỊA HIỆN TRƯỜNG (SITE MONITORING)"
-        SiteInspector["7. aec_site_inspector\n(YOLOv11 Vision AI Engine\nAn toàn HSE & Soi nứt bê tông)"]
+        SiteInspector["8. aec_site_inspector\n(YOLOv11 Vision AI Engine\nAn toàn HSE & Soi nứt bê tông)"]
     end
 
-    MasterDirector --> VisionTakeoff & RebarEng & CostEng & Scheduler & QAQCEng & SiteInspector
+    MasterDirector --> VisionTakeoff & RebarEng & MaterialEng & CostEng & Scheduler & QAQCEng & SiteInspector
     
-    VisionTakeoff -.->|Dài x Rộng x Cao & Số lượng| CostEng
-    RebarEng -.->|Tổng khối lượng thép tấn| CostEng
+    VisionTakeoff -.->|Dài x Rộng x Cao & Số lượng| MaterialEng & CostEng
+    RebarEng -.->|Khối lượng chi tiết từng Ø| MaterialEng
     CostEng -.->|Khối lượng chi tiết| Scheduler
     CostEng -.->|Khối lượng nghiệm thu| QAQCEng
     Scheduler -.->|Trình tự thi công| QAQCEng
@@ -38,10 +39,11 @@ flowchart TD
 | :--- | :--- | :--- | :--- |
 | **`aec_master_director`** | **Giám đốc Dự án & Tổng Chỉ huy** | Mô hình suy luận cấp cao (Reasoning LLM) | Lập kế hoạch Modular WBS, phân công tác tử, kiểm duyệt chéo chống số chết. |
 | **`aec_vision_takeoff`** | **Kỹ sư Thị giác Bản vẽ (Takeoff)** | **Qwen2.5-VL / Gemini Vision** + `PyMuPDF` + `pdfplumber` + CAD MCP | "Mắt thần" đọc bản vẽ PDF/Ảnh/DWG, quét lưới trục, tự động đếm cột, dầm, cửa và trích xuất kích thước $L \times W \times H$. |
+| **`aec_rebar_engineer`** | **Kỹ sư Cốt thép Tối ưu** | Thuật toán Integer Linear Programming (1D Cutting Stock) | Tối ưu hóa cắt ghép thép thanh trên cây nguyên chuẩn **11.7m**, ép tỷ lệ đề-xê $< 1.5\%$. |
+| **`aec_material_estimator`** | **Kỹ sư Định mức & Tổng hợp Vật tư (BOM)** | Engine Phân rã Định mức BXD Thông tư 12/2021 | Bóc tách vật liệu cấu thành cho từng hạng mục WBS, chi tiết từng loại thép $\varnothing$, xi măng, cát, đá, cáp DƯL, gối chậu, khe co giãn; lập BOM toàn công trình. |
 | **`aec_cost_engineer`** | **Kỹ sư Trưởng Dự toán BoQ** | **Qwen 2.5 72B-Instruct** + RAG Định mức BXD | Lập dự toán $G_{XD}$ theo Thông tư 11, 12, 13/2021/TT-BXD, bảo đảm **100% công thức động Dài x Rộng x Cao x Số lượng x Hệ số**. |
 | **`aec_lead_scheduler`** | **Kỹ sư Trưởng Tiến độ** | Thuật toán đường găng CPM + MS Project XML Engine | Tra định mức nhân công TT 12, phân bổ tổ đội thợ, xác định đường găng và xuất tệp tiến độ Microsoft Project `.xml / .mpp`. |
 | **`aec_qaqc_engineer`** | **Kỹ sư Quản lý Chất lượng KCS** | RAG Tiêu chuẩn TCVN + Luật XD 135 & NĐ 207 | Thiết lập danh mục 18 - 25 biên bản nghiệm thu chuyển bước, trỏ công thức khối lượng trực tiếp từ Sheet QS sang KCS. |
-| **`aec_rebar_engineer`** | **Kỹ sư Cốt thép Tối ưu** | Thuật toán Integer Linear Programming (1D Cutting Stock) | Tối ưu hóa cắt ghép thép thanh trên cây nguyên chuẩn **11.7m**, ép tỷ lệ đề-xê $< 1.5\%$. |
 | **`aec_site_inspector`** | **Kỹ sư Giám sát Hiện trường & HSE** | **YOLOv11** (`ppe-detection`, `concrete-crack-detection`) | Soi ảnh camera/drone hiện trường: phạt vi phạm an toàn lao động (mũ, áo, dây an toàn) và phát hiện nứt/rỗ bê tông. |
 
 ---

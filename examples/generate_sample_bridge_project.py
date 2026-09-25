@@ -848,6 +848,13 @@ def create_full_package():
     wb.save(target_excel)
     print(f"-> Đã xuất thành công file Excel: {target_excel}")
 
+    try:
+        sys.path.insert(0, repo_root)
+        from examples.update_material_sheets import add_material_sheets
+        add_material_sheets(target_excel)
+    except Exception as e:
+        print("Lỗi tích hợp sheet vật tư:", e)
+
     # =============================================================
     # TẠO FILE MS PROJECT XML TIẾN ĐỘ THI CÔNG
     # =============================================================
