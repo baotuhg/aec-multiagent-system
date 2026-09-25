@@ -120,6 +120,60 @@ class AECAuditVerifier:
                 if c_g and str(c_g).startswith("="):
                     self.stats["total_formulas_checked"] += 1
 
+        # 6. Thẩm tra Sheet THONG_KE_THEP_CHI_TIET (BBS 390 thanh)
+        if "THONG_KE_THEP_CHI_TIET" in wb.sheetnames:
+            ws = wb["THONG_KE_THEP_CHI_TIET"]
+            for r in range(6, min(ws.max_row + 1, 400)):
+                c_n = ws.cell(r, 14).value # Cột N: Khối lượng kg (=L*M)
+                c_o = ws.cell(r, 15).value # Cột O: Khối lượng Tấn (=N/1000)
+                if c_n:
+                    self.stats["total_formulas_checked"] += 1
+                    if not str(c_n).startswith("="):
+                        self.findings.append(f"CẢNH BÁO BBS: Hàng {r} cột N không có công thức: {c_n}")
+                        self.score -= 1
+                if c_o:
+                    self.stats["total_formulas_checked"] += 1
+                    if not str(c_o).startswith("="):
+                        self.findings.append(f"CẢNH BÁO BBS: Hàng {r} cột O không có công thức: {c_o}")
+                        self.score -= 1
+
+        # 7. Thẩm tra Sheet CAP_PHOI_1M3_VA_TAN_SUAT (Bảng 1 Cấp phối 1m3 & Bảng 2 Tần suất KCS)
+        if "CAP_PHOI_1M3_VA_TAN_SUAT" in wb.sheetnames:
+            ws = wb["CAP_PHOI_1M3_VA_TAN_SUAT"]
+            # Bảng 1: Hàng 9-17 kiểm tra công thức nhân chia định mức
+            for r in range(9, 18):
+                c_j = ws.cell(r, 10).value # Thể tích
+                c_k = ws.cell(r, 11).value # Xi măng
+                c_l = ws.cell(r, 12).value # Cát
+                c_m = ws.cell(r, 13).value # Đá
+                if c_j and str(c_j).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+                if c_k and str(c_k).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+                if c_l and str(c_l).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+                if c_m and str(c_m).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+
+            # Bảng 2: Hàng 24-52 kiểm tra số tổ mẫu = ROUNDUP(G/H, 0)
+            for r in range(24, 53):
+                c_g = ws.cell(r, 7).value
+                c_i = ws.cell(r, 9).value
+                if c_g and str(c_g).startswith("="):
+                    self.stats["total_formulas_checked"] += 1
+                if c_i and str(c_i).startswith("=ROUNDUP"):
+                    self.stats["total_formulas_checked"] += 1
+
+        # 8. Thẩm tra 3 Sheet Mẫu Biên bản In ấn A4 (Excel A4)
+        for s_form in ["MAU_BIEN_BAN_KCS", "MAU_BB_NGHIEM_THU_VAT_LIEU", "MAU_BB_LAY_MAU_HIEN_TRUONG"]:
+            if s_form in wb.sheetnames:
+                ws = wb[s_form]
+                for r in range(1, ws.max_row + 1):
+                    for c in range(1, ws.max_column + 1):
+                        val = ws.cell(r, c).value
+                        if val and str(val).startswith("="):
+                            self.stats["total_formulas_checked"] += 1
+
         self.score = max(0, self.score)
         print(f"[*] Thẩm tra hoàn tất. Điểm chất lượng: {self.score}/100")
 

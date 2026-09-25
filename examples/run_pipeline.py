@@ -33,7 +33,7 @@ def main():
 
     print("\n[BƯỚC 1 - 6] Kiểm tra sản phẩm kỹ thuật và bảng tính đã khởi tạo:")
     if os.path.exists(excel_target):
-        print(f"  -> File Excel 11 Sheet Master: {excel_target} (EXISTS)")
+        print(f"  -> File Excel 14 Sheet Master: {excel_target} (EXISTS)")
     else:
         print(f"  -> File Excel chưa có tại templates, đang kiểm tra thư mục gốc...")
 
@@ -43,7 +43,7 @@ def main():
         auditor.audit_excel_workbook()
         auditor.export_audit_report(audit_rep)
         print(f"  -> Điểm kiểm toán độc lập: {auditor.score} / 100")
-        print(f"  -> Tổng số Sheet đã thẩm định: {auditor.stats['sheets_verified']} / 11 Sheets")
+        print(f"  -> Tổng số Sheet đã thẩm định: {auditor.stats['sheets_verified']} / 14 Sheets")
     
     print("\n" + "=" * 70)
     print("  HOÀN TẤT THỰC THI CHUỖI QUY TRÌNH AEC MASTER AN TOÀN")
