@@ -1,0 +1,84 @@
+{
+  "project_name": "Trường Liên cấp Phố Bảng - Hạng mục: San nền, Kè đá, Cổng hàng rào & Thoát nước",
+  "project_type": "HA_TANG_KY_THUAT",
+  "currency": "VNĐ",
+  "items": [
+    {
+      "stt": 1,
+      "ma_hieu": "AB.11111",
+      "ten_cong_tac": "Đào bóc lớp đất hữu cơ, vận chuyển đổ ra bãi thải",
+      "don_vi": "m3",
+      "khoi_luong": 1250.0,
+      "don_gia_vat_lieu": 0,
+      "don_gia_nhan_cong": 18500,
+      "don_gia_may": 32000,
+      "ghi_chu": "Bãi đổ thải cự ly 2.5km"
+    },
+    {
+      "stt": 2,
+      "ma_hieu": "AB.24111",
+      "ten_cong_tac": "Đắp đất san nền công trình độ chặt K = 0.90",
+      "don_vi": "m3",
+      "khoi_luong": 3800.0,
+      "don_gia_vat_lieu": 65000,
+      "don_gia_nhan_cong": 22000,
+      "don_gia_may": 28000,
+      "ghi_chu": "Đất mỏ đất cấp 2"
+    },
+    {
+      "stt": 3,
+      "ma_hieu": "AE.21111",
+      "ten_cong_tac": "Xây kè đá hộc vữa xi măng mác 75 chống sạt trượt",
+      "don_vi": "m3",
+      "khoi_luong": 420.0,
+      "don_gia_vat_lieu": 485000,
+      "don_gia_nhan_cong": 240000,
+      "don_gia_may": 18000,
+      "ghi_chu": "Kè đá cao h=3.5m"
+    },
+    {
+      "stt": 4,
+      "ma_hieu": "AF.11111",
+      "ten_cong_tac": "Bê tông lót móng kè và chân khay đá 4x6 mác 100",
+      "don_vi": "m3",
+      "khoi_luong": 65.0,
+      "don_gia_vat_lieu": 720000,
+      "don_gia_nhan_cong": 195000,
+      "don_gia_may": 45000,
+      "ghi_chu": "Dày 10cm"
+    },
+    {
+      "stt": 5,
+      "ma_hieu": "AF.12211",
+      "ten_cong_tac": "Bê tông móng, xà mũ, giằng móng mác 250 đá 1x2",
+      "don_vi": "m3",
+      "khoi_luong": 185.0,
+      "don_gia_vat_lieu": 1150000,
+      "don_gia_nhan_cong": 280000,
+      "don_gia_may": 85000,
+      "ghi_chu": "Xi măng PCB40"
+    },
+    {
+      "stt": 6,
+      "ma_hieu": "AG.11111",
+      "ten_cong_tac": "Sản xuất, lắp dựng cốt thép móng và giằng dầm đường kính <= 18mm",
+      "don_vi": "tấn",
+      "khoi_luong": 14.5,
+      "don_gia_vat_lieu": 16500000,
+      "don_gia_nhan_cong": 3200000,
+      "don_gia_may": 250000,
+      "ghi_chu": "Thép CB300-V / CB400-V"
+    },
+    {
+      "stt": 7,
+      "ma_hieu": "AH.11111",
+      "ten_cong_tac": "Lắp đặt ống cống bê tông ly tâm D1000 thoát nước dọc",
+      "don_vi": "m",
+      "khoi_luong": 120.0,
+      "don_gia_vat_lieu": 850000,
+      "don_gia_nhan_cong": 180000,
+      "don_gia_may": 120000,
+      "ghi_chu": "Cống chịu lực HL93"
+    }
+  ]
+}

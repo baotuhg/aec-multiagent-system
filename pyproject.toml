@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aec-master-framework"
+version = "2.0.0"
+authors = [
+  { name="AEC Engineering Group", email="contact@aec-master.org" },
+]
+description = "Autonomous Multi-Agent AI Framework for AEC Engineering (QS, BoQ, Rebar Optimization, CPM Scheduling, QA/QC & Payment Compliance)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Office/Business :: Financial :: Spreadsheet",
+]
+dependencies = [
+    "openpyxl>=3.1.5",
+    "python-docx>=1.2.0",
+    "ezdxf>=1.4.0",
+    "numpy>=1.26.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/aec-engineering/aec-master-framework"
+"Bug Tracker" = "https://github.com/aec-engineering/aec-master-framework/issues"

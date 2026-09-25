@@ -1,0 +1,11 @@
+# Core deterministic document & calculation engines
+openpyxl>=3.1.5
+python-docx>=1.2.0
+
+# CAD & Drawing processing
+ezdxf>=1.4.0
+numpy>=1.26.0
+
+# Optional: Hugging Face & RAG modules
+# sentence-transformers>=3.0.0
+# huggingface-hub>=0.24.0
