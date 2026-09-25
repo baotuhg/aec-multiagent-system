@@ -1,9 +1,10 @@
 {
   "meta": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "system": "AEC Master Multi-Agent Architecture",
     "last_updated": "2026-09-25T19:45:00+07:00",
-    "governance_standard": "Luat Xay dung 135/2025/QH15, ND 207/2026/ND-CP, TT 11/2021/TT-BXD"
+    "governance_standard": "Luat Xay dung 135/2025/QH15, ND 207/2026/ND-CP, TT 11/2021/TT-BXD",
+    "total_sheets": 11
   },
   "project_identity": {
     "project_name": "Cao tốc Tuyên Quang - Hà Giang (Giai đoạn 1) - Đoạn qua tỉnh Hà Giang",
@@ -99,24 +100,24 @@
       "rebar_D10_tons": 18.52,
       "rebar_D12_tons": 4.85,
       "rebar_D14_tons": 42.15,
-      "rebar_D16_tons": 78.40,
-      "rebar_D20_tons": 19.80,
+      "rebar_D16_tons": 78.4,
+      "rebar_D20_tons": 19.8,
       "rebar_D25_tons": 64.25,
-      "rebar_D28_tons": 23.50,
-      "rebar_D32_tons": 48.60,
+      "rebar_D28_tons": 23.5,
+      "rebar_D32_tons": 48.6,
       "prestressing_strand_15_2mm_tons": 29.91,
       "prestressing_anchorage_sets": 180,
-      "steel_casing_D1300_tons": 45.60,
+      "steel_casing_D1300_tons": 45.6,
       "sonic_tubes_D60_m": 2640,
       "guardrail_handrail_m": 260.8
     },
     "concrete_and_minerals": {
-      "cement_pcb40_tons": 725.40,
-      "sand_gold_m3": 855.20,
-      "crushed_stone_1x2_m3": 1540.60,
-      "rubble_stone_20x30_m3": 420.00,
-      "backfill_soil_K98_m3": 1680.00,
-      "water_clean_m3": 335.00
+      "cement_pcb40_tons": 725.4,
+      "sand_gold_m3": 855.2,
+      "crushed_stone_1x2_m3": 1540.6,
+      "rubble_stone_20x30_m3": 420.0,
+      "backfill_soil_K98_m3": 1680.0,
+      "water_clean_m3": 335.0
     },
     "additives_and_chemicals": {
       "superplasticizer_kg": 9850,
@@ -133,5 +134,52 @@
       "drainage_gullies_sets": 24,
       "pvc_drainage_pipes_D110_m": 84.0
     }
+  },
+  "detailed_rebar_bbs_summary": {
+    "total_rebar_marks_count": 390,
+    "total_steel_and_cable_tons": 883.902,
+    "group_D_le_10mm_tons": 12.187,
+    "group_10_lt_D_le_18mm_tons": 458.566,
+    "group_D_gt_18mm_tons": 385.365,
+    "group_strand_15_2mm_tons": 27.784,
+    "standard": "TCVN 1651:2018 / ASTM A416 Grade 270"
+  },
+  "concrete_mix_design_summary": {
+    "total_concrete_volume_m3": 3460.667,
+    "total_cement_pcb40_tons": 1406.26,
+    "total_sand_gold_m3": 1565.06,
+    "total_crushed_stone_1x2_m3": 2925.37,
+    "total_water_m3": 595.48,
+    "total_admixture_liters": 13804.9,
+    "grades": [
+      "C10",
+      "C25",
+      "C30_Tremie",
+      "C30_Substructure",
+      "C35_Superstructure",
+      "C45_Precast_SuperT",
+      "C40_Non_Shrink"
+    ]
+  },
+  "qaqc_testing_frequency_summary": {
+    "total_mandatory_tests_and_samples": 809,
+    "rebar_tensile_and_bending_tests": 16,
+    "cement_chemical_physical_tests": 15,
+    "sand_aggregate_tests": 8,
+    "crushed_stone_tests": 15,
+    "slump_tests_on_site": 432,
+    "concrete_cube_compressive_samples": 163,
+    "sonic_logging_cross_sections_D1200": 156,
+    "high_strain_dynamic_pda_tests": 1,
+    "pile_coring_inspection_tests": 4,
+    "standards": [
+      "TCVN 4453:1995",
+      "TCVN 1651:2018",
+      "TCVN 6260:2020",
+      "TCVN 7570:2006",
+      "TCVN 9396:2012",
+      "ASTM D6760",
+      "ASTM D4945"
+    ]
   }
 }

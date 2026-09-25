@@ -104,6 +104,7 @@ DONG_GOI_HETHONG_AEC/
 │   ├── 06_QUY_TRINH_KCS_LOGIC_CHEO_XUAT_WORD.md        # Quy trình 7: KCS Word & Ma trận ngày chéo
 │   ├── 07_QUY_TRINH_THUYET_MINH_BIEN_PHAP_HUGGINGFACE.md # Quy trình 8: RAG Hugging Face BPTC
 │   ├── 08_QUY_TRINH_PHAN_TICH_TONG_HOP_VAT_TU_DINH_MUC.md # Quy trình 3: Phân tích & Tổng hợp Vật tư BOM
+│   ├── 09_QUY_TRINH_THONG_KE_THEP_BBS_VA_TAN_SUAT_THI_NGHIEM.md # Quy trình 9: Thống kê thép chi tiết BBS & Ma trận tần suất KCS
 │   └── HUONG_DAN_SU_DUNG_AI_ANTIGRAVITY_CLAUDE_GPT.md  # Sổ tay vận hành Antigravity, Claude, GPT
 │
 ├── prompts/                      # 🧠 MASTER SYSTEM PROMPTS CHUYÊN DỤNG
@@ -118,12 +119,12 @@ DONG_GOI_HETHONG_AEC/
 │   └── aec-rebar-optimizer/      # Kỹ năng Giải bài toán cắt thép 1 chiều (1D Cutting Stock)
 │
 ├── templates/                    # 📦 SẢN PHẨM MẪU SỐ HÓA HOÀN THIỆN
-│   ├── Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx       # Workbook 9 sheet liên kết động hoàn hảo
+│   ├── Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx       # Workbook 11 sheet liên kết động hoàn hảo
 │   ├── Tien_Do_Thi_Cong_Cau_Km19+529.080.xml           # File MS Project XML (36 công tác, CPM)
 │   ├── Tien_Do_Thi_Cong_Cau_Km19+529.080.mpp           # File Microsoft Project Native binary
 │   ├── Ho_So_Bien_Ban_Nghiem_Thu_KCS_Cau_Km19+529.080.docx # Trọn bộ 22 Biên bản KCS chuẩn NĐ 207
 │   ├── Thuyet_Minh_Bien_Phap_Thi_Cong_Cau_Km19+529.080.md  # Thuyết minh BPTC 8 chương TCVN
-│   ├── BAO_CAO_THAM_TRA_AEC_AUDIT.md                   # Báo cáo thẩm tra độc lập Điểm 100/100 (9 sheet)
+│   ├── BAO_CAO_THAM_TRA_AEC_AUDIT.md                   # Báo cáo thẩm tra độc lập Điểm 100/100 (11 sheet)
 │   ├── PROJECT_STATE.json                              # Trạng thái dự án mẫu hoàn chỉnh (BOM data)
 │   ├── Ho_So_KCS_QS_Cau_Khai_Hoang_2.xlsx              # File mẫu Cầu Khai Hoang 2
 │   ├── Tien_Do_Thi_Cong_Cau_Khai_Hoang_2.xml           # File tiến độ Cầu Khai Hoang 2
@@ -131,9 +132,10 @@ DONG_GOI_HETHONG_AEC/
 │   └── Tien_Do_Thi_Cong_Dan_Dung.xml                   # File tiến độ Nhà Dân dụng cao tầng
 │
 ├── examples/                     # 🚀 VÍ DỤ THỰC THI & SCRIPT CHẠY MẪU
-│   ├── run_pipeline.py                                 # Pipeline runner kiểm tra & audit toàn bộ 9 sheet
+│   ├── run_pipeline.py                                 # Pipeline runner kiểm tra & audit toàn bộ 11 sheet
 │   ├── generate_sample_bridge_project.py               # Script tự tạo lại toàn bộ Workbook & XML Cầu
 │   ├── update_material_sheets.py                       # Script phân tích & tổng hợp vật tư BOM
+│   ├── add_rebar_bbs_and_mix_sheets.py                 # Script trích xuất BBS 390 thanh & Ma trận tần suất KCS
 │   └── generate_kcs_word_package.py                    # Script tự xuất bộ 22 biên bản KCS Word
 │
 ├── .gitignore                    # Bộ lọc file rác Python, OS và Office lock
@@ -145,18 +147,21 @@ DONG_GOI_HETHONG_AEC/
 
 ---
 
-## 🔄 4. Chuỗi 8 Bước Quy trình Kỹ thuật Khép kín
+## 🔄 4. Chuỗi Quy trình Kỹ thuật Khép kín (11 Sheet Excel Động)
 
-| Bước | Tên Quy trình | Tác tử Phụ trách | Chuẩn Pháp lý / Kỹ thuật | Sản phẩm Đầu ra |
+| Bước / Sheet | Tên Quy trình & Tên Sheet Excel | Tác tử Phụ trách | Chuẩn Pháp lý / Kỹ thuật | Sản phẩm Đầu ra |
 | :---: | :--- | :--- | :--- | :--- |
-| **01** | **Bóc tách Takeoff WBS** | `aec_vision_takeoff` | TCVN 11823:2017, TT 13/2021 | Sheet `QS_DIEN_GIAI_CHI_TIET` (100% công thức động Dài x Rộng x Cao x SL x Hệ số, CẤM SỐ CHẾT) |
-| **02** | **Tối ưu Cắt thép 1D** | `aec_rebar_engineer` | TCVN 1651:2018, Cutting Stock | Sheet `TO_HOP_CAT_THEP_11M7` (Tổ hợp thanh trên cây 11.7m, phôi thừa đề-xê < 1.5%) |
-| **03** | **Phân tích & Tổng hợp Vật tư (BOM)** | `aec_material_estimator` | Thông tư 12/2021/TT-BXD | Sheet `PHAN_TICH_VAT_TU_WBS` (chi tiết xi măng, cát, đá, sắt thép từng loại $\varnothing$) + Sheet `TONG_HOP_VAT_TU_TOAN_BO` (BOM toàn cầu & Kế hoạch cấp hàng) |
-| **04** | **Dự toán $G_{XD}$** | `aec_cost_engineer` | TT 11/2021/TT-BXD, TT 13/2021 | Sheet `TONG_HOP_DU_TOAN_GXD` ($G_{XD} = T + GT(7.3\%) + TL(5.5\%) + VAT(8\%)$) |
-| **05** | **Thanh toán Kỳ 03a** | `aec_cost_engineer` | Nghị định 99/2021/NĐ-CP | Sheet `THANH_TOAN_KY_PHU_LUC_03A` (Lũy kế thực hiện, giữ lại bảo hành 5%) |
-| **06** | **Tiến độ CPM & Gantt** | `aec_lead_scheduler` | TT 12/2021/TT-BXD, CPM Method | Sheet `TIEN_DO_THI_CONG_WBS` + Tệp `MS Project (.xml/.mpp)` (Critical Path, 36 tasks) |
-| **07** | **Hồ sơ KCS Word** | `aec_qaqc_engineer` | Nghị định 207/2026/NĐ-CP | File Word `.docx` (22 Biên bản nghiệm thu KCS + Ma trận kiểm tra logic ngày chéo) |
-| **08** | **Thuyết minh BPTC & Audit** | `aec_method_statement_agent` & `aec_audit_verifier` | RAG Hugging Face BGE-M3 + Qwen2.5 | File Thuyết minh BPTC 8 chương + Báo cáo thẩm tra độc lập Audit Score 100/100 |
+| **01** | **Bóc tách Takeoff WBS**<br>`QS_DIEN_GIAI_CHI_TIET` | `aec_vision_takeoff` | TCVN 11823:2017, TT 13/2021 | 100% công thức động Dài x Rộng x Cao x SL x Hệ số, CẤM SỐ CHẾT |
+| **02** | **Tối ưu Cắt thép 1D**<br>`TO_HOP_CAT_THEP_11M7` | `aec_rebar_engineer` | TCVN 1651:2018, Cutting Stock | Tổ hợp thanh trên cây 11.7m, phôi thừa đề-xê < 1.5% |
+| **03** | **Thống kê Thép Chi tiết (BBS)**<br>`THONG_KE_THEP_CHI_TIET` | `aec_rebar_engineer` | Bản vẽ CAD, TCVN 1651:2018 | Bar Bending Schedule 390 thanh thép chi tiết từng cấu kiện: Cọc D1200, Mố M1/M2, Trụ T1/T2, Dầm Super-T, Mặt cầu, Bản quá độ, Gờ lan can |
+| **04** | **Cấp phối $1\text{ m}^3$ & Tần suất KCS**<br>`CAP_PHOI_1M3_VA_TAN_SUAT` | `aec_material_estimator` & `aec_qaqc_engineer` | TT 12/2021/TT-BXD, TCVN 4453, TCVN 9396, ASTM D6760 | Phân tích $1\text{ m}^3$ bê tông C10, C25, C30, C35, C40, C45 và Ma trận 809 phép thử KCS (Kéo uốn thép, nén R7/R28, siêu âm cọc, PDA) |
+| **05** | **Phân rã Định mức Vật tư WBS**<br>`PHAN_TICH_VAT_TU_WBS` | `aec_material_estimator` | Thông tư 12/2021/TT-BXD | Chi tiết xi măng, cát, đá, sắt thép từng loại $\varnothing$, cáp DƯL liên kết công thức động từ Sheet QS |
+| **06** | **Tổng hợp Vật tư Toàn cầu (BOM)**<br>`TONG_HOP_VAT_TU_TOAN_BO` | `aec_material_estimator` | TT 12/2021, Chuỗi cung ứng | BOM toàn cầu, tính hao hụt thi công và Kế hoạch cấp hàng theo 4 giai đoạn |
+| **07** | **Dự toán $G_{XD}$**<br>`TONG_HOP_DU_TOAN_GXD` | `aec_cost_engineer` | TT 11/2021/TT-BXD, TT 13/2021 | $G_{XD} = T + GT(7.3\%) + TL(5.5\%) + VAT(8\%)$ |
+| **08** | **Thanh toán Kỳ 03a**<br>`THANH_TOAN_KY_PHU_LUC_03A` | `aec_cost_engineer` | Nghị định 99/2021/NĐ-CP | Lũy kế thực hiện, giữ lại bảo hành 5% theo hợp đồng |
+| **09** | **Tiến độ CPM & Gantt**<br>`TIEN_DO_THI_CONG_WBS` | `aec_lead_scheduler` | TT 12/2021/TT-BXD, CPM Method | Sheet `TIEN_DO_THI_CONG_WBS` + Tệp `MS Project (.xml/.mpp)` (Critical Path, 36 tasks) |
+| **10** | **Hồ sơ KCS Word**<br>`HOSO_KCS_NGHIEM_THU` | `aec_qaqc_engineer` | Nghị định 207/2026/NĐ-CP | File Word `.docx` (22 Biên bản nghiệm thu KCS + Ma trận kiểm tra logic ngày chéo) |
+| **11** | **Thuyết minh BPTC & Audit**<br>`BAO_CAO_THAM_TRA_AEC_AUDIT` | `aec_method_statement_agent` & `aec_audit_verifier` | RAG Hugging Face BGE-M3 + Qwen2.5 | File Thuyết minh BPTC 8 chương + Báo cáo thẩm tra độc lập Audit Score 100/100 |
 
 ---
 
@@ -170,14 +175,15 @@ cd aec-multiagent-system
 # 2. Cài đặt các gói phụ thuộc Python
 pip install -r requirements.txt
 
-# 3. Chạy chuỗi kiểm toán độc lập trên Workbook 9 Sheet (Audit Score 100/100)
+# 3. Chạy chuỗi kiểm toán độc lập trên Workbook 11 Sheet (Audit Score 100/100)
 python examples/run_pipeline.py
 
-# 4. Sinh lại toàn bộ tệp Excel 9 Sheet sống và tệp MS Project XML từ đầu
-python examples/generate_sample_bridge_project.py
+# 4. Trích xuất Bar Bending Schedule (BBS) và Ma trận tần suất KCS
+python examples/add_rebar_bbs_and_mix_sheets.py
 
 # 5. Xuất trọn bộ 22 Biên bản nghiệm thu KCS có ma trận logic ngày ra tệp Word (.docx)
 python examples/generate_kcs_word_package.py
+```
 ```
 
 ---
