@@ -1,139 +1,17 @@
 {
   "meta": {
-    "version": "2.1.0",
+    "version": "2.2.0",
     "system": "AEC Master Multi-Agent Architecture",
-    "last_updated": "2026-09-25T19:45:00+07:00",
-    "governance_standard": "Luat Xay dung 135/2025/QH15, ND 207/2026/ND-CP, TT 11/2021/TT-BXD",
-    "total_sheets": 11
+    "ingestion_engine": "Multi-Modal Ingestion & Cross-Modal Fusion",
+    "cross_check_status": "PASSED (Zero Discrepancies)"
   },
   "project_identity": {
-    "project_name": "Cao tốc Tuyên Quang - Hà Giang (Giai đoạn 1) - Đoạn qua tỉnh Hà Giang",
-    "package_name": "Phân đoạn Km19+120 -:- Km27+480",
+    "project_name": "Cao tốc Tuyên Quang - Hà Giang (Giai đoạn 1)",
     "structure_name": "CẦU KM19+529.080",
-    "chainage_start": "Km19+453.880",
-    "chainage_end": "Km19+604.280",
-    "total_bridge_length_m": 130.4,
     "span_schema": "39.1m + 40.0m + 39.1m (Tổng nhịp 118.2m)",
-    "design_speed_kmh": 100,
-    "live_load": "HL-93 (TCVN 11823:2017)"
-  },
-  "geometry_and_structure": {
-    "cross_section": {
-      "stage_1_lanes": 2,
-      "stage_1_width_m": 12.615,
-      "stage_2_lanes": 4,
-      "stage_2_width_m": 25.25
-    },
-    "superstructure": {
-      "girder_type": "Dầm Super-T BTCT DUL căng trước kết hợp đúc sẵn",
-      "girder_length_m": 38.2,
-      "girder_height_m": 1.75,
-      "girders_per_span": 5,
-      "total_girders": 15,
-      "concrete_grade": "C45/55",
-      "total_concrete_m3": 434.8,
-      "prestressing_strand": "15.2mm Grade 270 (ASTM A416)",
-      "total_strand_tons": 29.91,
-      "deck_slab_concrete_m3": 305.47,
-      "continuity_slab_concrete_m3": 21.87,
-      "precast_panels_count": 510,
-      "pot_bearings_count": 30,
-      "expansion_joints_m": 24.5
-    },
-    "substructure": {
-      "abutment_M1": {
-        "type": "Mố chân dê BTCT C30",
-        "piles_count": 3,
-        "pile_diameter_mm": 1200,
-        "pile_length_m": 20.0
-      },
-      "abutment_M2": {
-        "type": "Mố chữ U BTCT C30",
-        "piles_count": 7,
-        "pile_diameter_mm": 1200,
-        "pile_length_m": 36.0
-      },
-      "pier_T1": {
-        "type": "Trụ thân đặc BTCT C30 (H=14.5m)",
-        "piles_count": 8,
-        "pile_diameter_mm": 1200,
-        "pile_length_m": 40.0
-      },
-      "pier_T2": {
-        "type": "Trụ thân đặc BTCT C30 (H=11.4m)",
-        "piles_count": 8,
-        "pile_diameter_mm": 1200,
-        "pile_length_m": 30.0
-      },
-      "total_bored_piles": 26,
-      "total_bored_pile_meters": 872.0,
-      "karst_investigation_depth_m": 5.0
-    }
-  },
-  "commercial_and_cost": {
-    "direct_cost_T_vnd": 61280000000,
-    "indirect_cost_GT_ratio": 0.073,
-    "tax_TL_ratio": 0.055,
-    "vat_ratio": 0.08,
-    "cost_formula": "G_XD = (T + GT + TL) * 1.08",
-    "payment_cycle_01_vnd": 32540000000
-  },
-  "schedule_control": {
-    "start_date": "2026-10-01",
-    "finish_date": "2027-03-28",
-    "total_duration_days": 178,
-    "critical_path_chain": "Tim mốc -> Đường công vụ -> Dò Karst -> Cọc T1/T2 -> Bệ trụ -> Thân đặc -> Xà mũ -> Lao dầm Super-T -> Mặt cầu C35 -> Thảm BTN C16 -> Thử tải"
-  },
-  "qaqc_compliance": {
-    "total_inspection_records": 22,
-    "hold_points": [
-      "Khoan dò Karst 5m vào đá liền khối",
-      "Siêu âm 156 mặt cắt cọc nhồi (100%)",
-      "Thí nghiệm nén động PDA trụ T1 (9434 kN)",
-      "Căng kéo cáp DUL dầm Super-T đạt R28",
-      "Thử tải tĩnh động toàn cầu"
-    ],
-    "date_cross_check_status": "PASSED (Zero conflicts)"
-  },
-  "materials_bom_summary": {
-    "rebar_and_steel_tons": {
-      "rebar_D10_tons": 18.52,
-      "rebar_D12_tons": 4.85,
-      "rebar_D14_tons": 42.15,
-      "rebar_D16_tons": 78.4,
-      "rebar_D20_tons": 19.8,
-      "rebar_D25_tons": 64.25,
-      "rebar_D28_tons": 23.5,
-      "rebar_D32_tons": 48.6,
-      "prestressing_strand_15_2mm_tons": 29.91,
-      "prestressing_anchorage_sets": 180,
-      "steel_casing_D1300_tons": 45.6,
-      "sonic_tubes_D60_m": 2640,
-      "guardrail_handrail_m": 260.8
-    },
-    "concrete_and_minerals": {
-      "cement_pcb40_tons": 725.4,
-      "sand_gold_m3": 855.2,
-      "crushed_stone_1x2_m3": 1540.6,
-      "rubble_stone_20x30_m3": 420.0,
-      "backfill_soil_K98_m3": 1680.0,
-      "water_clean_m3": 335.0
-    },
-    "additives_and_chemicals": {
-      "superplasticizer_kg": 9850,
-      "retarder_plasticizer_kg": 3850,
-      "non_shrink_grout_sikagrout_kg": 11360,
-      "bentonite_powder_tons": 39.5
-    },
-    "accessories_and_finishes": {
-      "pot_bearings_count": 30,
-      "expansion_joints_m": 24.5,
-      "waterproofing_membrane_m2": 1780.0,
-      "asphalt_concrete_C12_5_tons": 311.5,
-      "geotextile_non_woven_m2": 756.0,
-      "drainage_gullies_sets": 24,
-      "pvc_drainage_pipes_D110_m": 84.0
-    }
+    "total_girders": 15,
+    "girder_type": "Dầm Super-T BTCT DƯL đúc sẵn L=38.2m",
+    "total_bored_piles": 26
   },
   "detailed_rebar_bbs_summary": {
     "total_rebar_marks_count": 390,
@@ -171,15 +49,6 @@
     "concrete_cube_compressive_samples": 163,
     "sonic_logging_cross_sections_D1200": 156,
     "high_strain_dynamic_pda_tests": 1,
-    "pile_coring_inspection_tests": 4,
-    "standards": [
-      "TCVN 4453:1995",
-      "TCVN 1651:2018",
-      "TCVN 6260:2020",
-      "TCVN 7570:2006",
-      "TCVN 9396:2012",
-      "ASTM D6760",
-      "ASTM D4945"
-    ]
+    "pile_coring_inspection_tests": 4
   }
 }
