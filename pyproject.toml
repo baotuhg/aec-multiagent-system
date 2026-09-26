@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "aec-master-framework"
-version = "2.0.0"
+name = "23hg-multiagent-system"
+version = "3.0.0"
 authors = [
-  { name="AEC Engineering Group", email="contact@aec-master.org" },
+  { name="Bao Tu & AEC Digital Engineers", email="contact@baotu.me" },
 ]
-description = "Autonomous Multi-Agent AI Framework for AEC Engineering (QS, BoQ, Rebar Optimization, CPM Scheduling, QA/QC & Payment Compliance)"
+description = "Autonomous Closed-Loop Multi-Agent System for Civil Engineering (State Graph, AI Supervisor, OR-Tools Rebar, CPM, QA/QC Lab Link & As-Built Loop)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -24,8 +24,11 @@ dependencies = [
     "python-docx>=1.2.0",
     "ezdxf>=1.4.0",
     "numpy>=1.26.0",
+    "ortools>=9.0.0",
+    "pandas>=2.0.0",
+    "python-dateutil>=2.9.0",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/aec-engineering/aec-master-framework"
-"Bug Tracker" = "https://github.com/aec-engineering/aec-master-framework/issues"
+"Homepage" = "https://github.com/baotuhg/23HG-multiagent-system"
+"Bug Tracker" = "https://github.com/baotuhg/23HG-multiagent-system/issues"

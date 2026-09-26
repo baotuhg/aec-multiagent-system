@@ -1,4 +1,4 @@
-# 🏗 KIẾN TRÚC STATE GRAPH v3.0 — AEC MultiAgent System
+# 🏗 KIẾN TRÚC STATE GRAPH v3.0 — 23HG MultiAgent System
 
 > Tài liệu thiết kế kiến trúc sau Refactor từ Linear Pipeline → State Graph + Supervisor Pattern
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-RUN STATE GRAPH — Entry Point cho AEC MultiAgent System v3.0
+RUN STATE GRAPH — Entry Point cho 23HG MultiAgent System v3.0
 Kiến trúc: State Graph + Supervisor Pattern (thay thế Linear Pipeline cũ)
 
 Dùng lệnh:
@@ -87,7 +87,7 @@ def run_solver_test():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="AEC MultiAgent System v3.0 — State Graph + Supervisor"
+        description="23HG MultiAgent System v3.0 — State Graph + Supervisor"
     )
     parser.add_argument(
         "--phase", nargs="*",

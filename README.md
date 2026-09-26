@@ -1,4 +1,4 @@
-# 🏗️ AEC-MultiAgent-System
+# 🏗️ 23HG-MultiAgent-System
 ### Nền tảng Đa Tác tử Thông minh Tự động hóa Kỹ thuật & Quản lý Dự án Xây dựng
 **Kỹ sư Trưởng Số hóa: Bóc tách Hình học • Cắt thép 1D • Tổng hợp Vật tư BOM (Sắt thép từng Ø, Xi măng, Cát, Đá) • Dự toán $G_{XD}$ • Thanh toán 03a • Tiến độ CPM MS Project • Hồ sơ KCS Word • Thuyết minh BPTC**
 
@@ -17,7 +17,7 @@
 
 ## 📖 1. Giới thiệu Tổng quan (Overview)
 
-**AEC-MultiAgent-System** là một giải pháp mã nguồn mở tiên phong về chuyển đổi số toàn diện trong ngành Xây dựng (AEC - Architecture, Engineering & Construction) tại Việt Nam. Hệ thống tích hợp mô hình **Mạng lưới Đa tác tử Tự trị (Autonomous Multi-Agent System)** phối hợp cùng **Mô hình Ngôn ngữ Lớn (LLM)** và **Mô hình Khôi phục Dữ liệu Tăng cường (RAG)** để tự động hóa toàn bộ chuỗi sản xuất hồ sơ kỹ thuật công trình từ thiết kế đến thi công và thanh quyết toán.
+**23HG-MultiAgent-System** là một giải pháp mã nguồn mở tiên phong về chuyển đổi số toàn diện trong ngành Xây dựng (AEC - Architecture, Engineering & Construction) tại Việt Nam. Hệ thống tích hợp mô hình **Mạng lưới Đa tác tử Tự trị (Autonomous Multi-Agent System)** phối hợp cùng **Mô hình Ngôn ngữ Lớn (LLM)** và **Mô hình Khôi phục Dữ liệu Tăng cường (RAG)** để tự động hóa toàn bộ chuỗi sản xuất hồ sơ kỹ thuật công trình từ thiết kế đến thi công và thanh quyết toán.
 
 Hệ thống được thiết kế tuân thủ nghiêm ngặt khung pháp lý và quy chuẩn kỹ thuật hiện hành của Nhà nước Việt Nam:
 - **Luật Xây dựng số 135/2025/QH15** & **Nghị định số 207/2026/NĐ-CP**: Quy định về quản lý chất lượng thi công, giám sát và nghiệm thu hoàn thành hạng mục công trình (KCS).
@@ -242,8 +242,8 @@ DONG_GOI_HETHONG_AEC/
 
 ```bash
 # 1. Clone kho lưu trữ
-git clone https://github.com/baotuhg/aec-multiagent-system.git
-cd aec-multiagent-system
+git clone https://github.com/baotuhg/23HG-multiagent-system.git
+cd 23HG-multiagent-system
 
 # 2. Cài đặt các gói phụ thuộc Python
 pip install -r requirements.txt
