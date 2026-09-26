@@ -105,6 +105,8 @@ DONG_GOI_HETHONG_AEC/
 │   ├── 07_QUY_TRINH_THUYET_MINH_BIEN_PHAP_HUGGINGFACE.md # Quy trình 8: RAG Hugging Face BPTC
 │   ├── 08_QUY_TRINH_PHAN_TICH_TONG_HOP_VAT_TU_DINH_MUC.md # Quy trình 3: Phân tích & Tổng hợp Vật tư BOM
 │   ├── 09_QUY_TRINH_THONG_KE_THEP_BBS_VA_TAN_SUAT_THI_NGHIEM.md # Quy trình 9: Thống kê thép chi tiết BBS & Ma trận tần suất KCS
+│   ├── 10_QUY_TRINH_THU_NHAN_VA_HOP_NHAT_DU_LIEU_DA_PHUONG_THUC.md # Quy trình 10: Thu nhận & Hợp nhất đa phương thức (CAD/Excel/MD)
+│   ├── 11_QUY_TRINH_VALIDATION_KIEM_TRA_CHEO.md        # Quy trình 11: Kiểm tra chéo & Validation tự động 14 Sheet
 │   └── HUONG_DAN_SU_DUNG_AI_ANTIGRAVITY_CLAUDE_GPT.md  # Sổ tay vận hành Antigravity, Claude, GPT
 │
 ├── prompts/                      # 🧠 MASTER SYSTEM PROMPTS CHUYÊN DỤNG
