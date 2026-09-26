@@ -29,40 +29,80 @@ Hệ thống được thiết kế tuân thủ nghiêm ngặt khung pháp lý v�
 
 ---
 
-## 🏛️ 2. Nguyên lý Kiến trúc Cốt lõi (Core Principles)
+## 🏛️ 2. Nguyên lý Kiến trúc Cốt lõi (Core Multi-Agent Architecture)
 
-```
-       ┌────────────────────────────────────────────────────────┐
-       │             HỒ SƠ BẢN VẼ THIẾT KẾ (PDF/CAD)            │
-       └───────────────────────────┬────────────────────────────┘
-                                   │
-                                   ▼
-        ┌──────────────────────────────────────────────────────┐
-        │       BLACKBOARD ARCHITECTURE (PROJECT_STATE.JSON)   │
-        └───┬────────────────┬───────────────────┬──────────┬───┘
-            │                │                   │          │
-            ▼                ▼                   ▼          ▼
-   [aec_vision_takeoff] [aec_rebar_engineer] [aec_material] [aec_cost_engineer]
-   100% Công thức động  Cắt thép 11.7m <1.5% BOM Vật tư WBS Dự toán G_XD & 03a
-            │                │                   │          │
-            └────────────────┼───────────────────┴──────────┘
-                             ▼
-     ┌─────────────────────────────────────────────────────────┐
-     │  TOÁN TẤT ĐỊNH (DETERMINISTIC MATH - ZERO HALLUCINATION)│
-     │  • openpyxl: 9 Sheet Excel liên kết động 100%           │
-     │  • python-docx: 22 Biên bản KCS & Ma trận logic ngày     │
-     │  • xml.etree: MS Project 2003-2021 XML (Đường găng CPM) │
-     └─────────────────────────────┬───────────────────────────┘
-                                   │
-                ┌──────────────────┴────────────────────┐
-                ▼                                       ▼
-     [aec_lead_scheduler]                  [aec_method_statement_agent]
-     WBS & CPM MS Project                  RAG Hugging Face BGE-M3 + Qwen2.5
-                │                                       │
-                └──────────────────┬────────────────────┘
-                                   ▼
-                   [aec_audit_verifier (INDEPENDENT)]
-                   Kiểm toán độc lập • Chấm điểm 100/100
+```text
+                           +-------------------------------+
+                           |      BẢN VẼ / HỒ SƠ DỰ ÁN     |
+                           |   (CAD / BIM / Yêu cầu KTXD)  |
+                           +---------------+---------------+
+                                           |
+                                           v
+                  +-------------------------------------------------+
+                  |       AI SUPERVISOR (CHỈ HUY TRƯỞNG ẢO)         |
+                  | - Tiếp nhận mục tiêu, phân chia đầu việc Modular|
+                  | - Điều phối State dự án qua Shared State Bus    |
+                  | - Cổng soát xét kỹ thuật (Quality Gate Verifier)|
+                  +-----------------------+-------------------------+
+                                          |
+        +---------------------------------+---------------------------------+
+        |                                 |                                 |
+        v                                 v                                 v
++------------------+             +------------------+             +------------------+
+| AGENT TRẮC ĐẠC & |             |  AGENT KỸ THUẬT  |             |     AGENT QS     |
+|   BÓC TÁCH CAD   |             |   & BPTC/KCS     |             |    & DỰ TOÁN     |
++--------+---------+             +--------+---------+             +--------+---------+
+| * Đọc DWG/DXF/IFC|             | * Biện pháp thi  |             | * Áp định mức XD |
+| * Tính diện tích,|             |   công (cẩu, đà  |             | * Chạy đơn giá   |
+|   thể tích hình  |             |   giáo, an toàn) |             | * Tính G_xd      |
+|   học kết cấu    |             | * Lập hồ sơ KCS, |             | * Khối lượng 03a |
+| * Xuất bảng hình |             |   tiêu chuẩn NT  |             +--------+---------+
+|   học chuẩn      |             +--------+---------+                      ^
++--------+---------+                      ^                                |
+    |    |                                | (Thẩm tra tính khả thi)        | (Đẩy BOM sang tính $)
+    |    v                                |                                |
+    |  +------------------+               +---------------+                |
+    |  |  AGENT GIA CÔNG  |                               |                |
+    |  |    & VẬT TƯ      +-------------------------------+----------------+
+    |  +------------------+
+    |  | * Cắt thép 1D    |  ---> Giải thuật tối ưu: Hao hụt đề-xê < 1.5%
+    |  | * Lập bảng BOM   |  ---> Gửi BOM cho QS tính tiền, gửi phương án cho BPTC
+    |  +--------+---------+
+    |           |
+    +-----------+ (Khối lượng hình học & nhân lực)
+    |
+    v
++---------------------------------------------------------------------------+
+|                          AGENT KẾ HOẠCH & TIẾN ĐỘ                         |
+| * Lập mạng công việc CPM, xác định đường găng tiến độ                     |
+| * Tích hợp nguồn lực máy móc, vật tư và nhân lực theo từng phân đoạn      |
++------------------------------------+--------------------------------------+
+                                     |
+                                     v
+                  +-------------------------------------------------+
+                  |            SHARED STATE & FEEDBACK BUS          |
+                  |  (Kênh trao đổi dữ liệu & Phản biện giữa Agent) |
+                  |  + Autonomous Red Teaming Audit (100/100 điểm)  |
+                  +------------------+------------------------------+
+                                     |
+           [Dữ liệu có xung đột?] ---+---> [Có] ---> Gửi lệnh yêu cầu chỉnh sửa
+                                     |                (VD: Cẩu không với tới / đá ngày ->
+                                     |                 yêu cầu BPTC/CPM tính toán lại)
+                                   [Không]
+                                     |
+                                     v
+                  +-------------------------------------------------+
+                  |      KIỂM DUYỆT CUỐI (HUMAN-IN-THE-LOOP)        |
+                  |  Kỹ sư trưởng / Giám đốc dự án ký duyệt số      |
+                  +------------------+------------------------------+
+                                     |
+                                     v
+                  +-------------------------------------------------+
+                  |             XUẤT HỒ SƠ KỸ THUẬT SẠCH            |
+                  | - File Excel: Dự toán G_xd, 03a, Hồ sơ KCS A4   |
+                  | - File Word/MD: Thuyết minh Biện pháp thi công  |
+                  | - File MS Project: Mạng tiến độ CPM chuẩn       |
+                  +-------------------------------------------------+
 ```
 
 1. **Tách biệt Tuyệt đối Toán Kỹ thuật Tất định & Mô hình Ngôn ngữ Sinh:**
@@ -107,6 +147,7 @@ DONG_GOI_HETHONG_AEC/
 │   ├── 09_QUY_TRINH_THONG_KE_THEP_BBS_VA_TAN_SUAT_THI_NGHIEM.md # Quy trình 9: Thống kê thép chi tiết BBS & Ma trận tần suất KCS
 │   ├── 10_QUY_TRINH_THU_NHAN_VA_HOP_NHAT_DU_LIEU_DA_PHUONG_THUC.md # Quy trình 10: Thu nhận & Hợp nhất đa phương thức (CAD/Excel/MD)
 │   ├── 11_QUY_TRINH_VALIDATION_KIEM_TRA_CHEO.md        # Quy trình 11: Kiểm tra chéo & Validation tự động 14 Sheet
+│   ├── 12_SO_DO_DIEU_PHOI_MULTI_AGENT_TOAN_HE_THONG.md # Quy trình 12: Sơ đồ điều phối Multi-Agent toàn hệ thống (Bản vẽ kiến trúc chuẩn)
 │   └── HUONG_DAN_SU_DUNG_AI_ANTIGRAVITY_CLAUDE_GPT.md  # Sổ tay vận hành Antigravity, Claude, GPT
 │
 ├── prompts/                      # 🧠 MASTER SYSTEM PROMPTS CHUYÊN DỤNG
