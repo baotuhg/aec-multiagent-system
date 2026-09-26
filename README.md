@@ -148,7 +148,32 @@ DONG_GOI_HETHONG_AEC/
 │   ├── 10_QUY_TRINH_THU_NHAN_VA_HOP_NHAT_DU_LIEU_DA_PHUONG_THUC.md # Quy trình 10: Thu nhận & Hợp nhất đa phương thức (CAD/Excel/MD)
 │   ├── 11_QUY_TRINH_VALIDATION_KIEM_TRA_CHEO.md        # Quy trình 11: Kiểm tra chéo & Validation tự động 14 Sheet
 │   ├── 12_SO_DO_DIEU_PHOI_MULTI_AGENT_TOAN_HE_THONG.md # Quy trình 12: Sơ đồ điều phối Multi-Agent toàn hệ thống (Bản vẽ kiến trúc chuẩn)
+│   ├── 13_KIEN_TRUC_STATE_GRAPH_V3_SUPERVISOR_PATTERN.md # Quy trình 13: Kiến trúc Đồ thị Trạng thái (State Graph) & Supervisor Pattern
 │   └── HUONG_DAN_SU_DUNG_AI_ANTIGRAVITY_CLAUDE_GPT.md  # Sổ tay vận hành Antigravity, Claude, GPT
+│
+├── core/                         # 🧠 HỆ ĐIỀU PHỐI ĐỒ THỊ TRẠNG THÁI (STATE GRAPH v3.0)
+│   ├── state/
+│   │   ├── shared_state.py       # Pydantic/Dataclass SharedState (Single Source of Truth 8 miền)
+│   │   └── state_bus.py          # Shared State Bus thread-safe (RLock, read/write gateway)
+│   ├── supervisor/
+│   │   ├── supervisor_agent.py   # AI Supervisor (Chỉ huy trưởng ảo điều phối State Graph 7 pha)
+│   │   └── base_agent.py         # Lớp cơ sở trừu tượng BaseAgent
+│   ├── agents/
+│   │   ├── rebar_agent.py        # Sub-Agent Cắt thép OR-Tools & Phản biện chéo TCVN 5574
+│   │   ├── asbuilt_agent.py      # Sub-Agent Vòng lặp Đối soát Hiện trường & Phụ lục 03a
+│   │   └── sub_agents.py         # CADAgent, QSAgent, BPTCKCSAgent (QA/QC Lab Link), SchedulerAgent
+│   └── gates/
+│       ├── quality_gate.py       # Cổng kiểm soát kỹ thuật số học xác định (Quality Gates 1-4)
+│       └── human_gate.py         # Human-in-the-loop Gate (Ký duyệt Kỹ sư trưởng, Awaiting Approval)
+│
+├── tools/                        # ⚙️ CÔNG CỤ TÍNH TOÁN XÁC ĐỊNH (PURE PYTHON, ZERO LLM)
+│   ├── cutting_stock_solver.py   # Solver tổ hợp cắt thép 1D (Google OR-Tools CP-SAT + FFD)
+│   ├── cpm_calculator.py         # Bộ tính tiến độ CPM (Topological sort, ES/EF/LS/LF, Float)
+│   └── cad_diff_engine.py        # Động cơ so sánh phiên bản bản vẽ CAD Rev00 vs Rev01
+│
+├── schemas/                      # 📋 ĐẶC TẢ SCHEMA DỮ LIỆU CHUYÊN NGÀNH
+│   ├── site_log_schema.py        # Schema Nhật ký hiện trường & Khối lượng hoàn công As-Built
+│   └── lab_result_schema.py      # Schema Phiếu thí nghiệm phòng LAS-XD (R7/R28, kéo thép, PDA)
 │
 ├── prompts/                      # 🧠 MASTER SYSTEM PROMPTS CHUYÊN DỤNG
 │   ├── 00_PROMPT_TONG_HOP_MULTI_AGENT_AEC.md           # Prompt tổng hợp điều phối 8 tác tử
@@ -175,16 +200,18 @@ DONG_GOI_HETHONG_AEC/
 │
 ├── examples/                     # 🚀 VÍ DỤ THỰC THI & SCRIPT CHẠY MẪU
 │   ├── run_pipeline.py                                 # Pipeline runner kiểm tra & audit toàn bộ 14 sheet
+│   ├── run_cad_diff_demo.py                            # So sánh phiên bản CAD Rev00 vs Rev01 (Incremental Diff)
 │   ├── update_full_cross_linked_workbook.py            # Script thiết lập liên kết động 100% & 3 biểu mẫu Excel A4
 │   ├── run_data_ingestion_pipeline.py                  # Pipeline 4 tác tử thu nhận & hợp nhất dữ liệu CAD/Excel/MD
 │   ├── generate_sample_bridge_project.py               # Script tự tạo lại toàn bộ Workbook & XML Cầu
 │   ├── update_material_sheets.py                       # Script phân tích & tổng hợp vật tư BOM
 │   └── add_rebar_bbs_and_mix_sheets.py                 # Script trích xuất BBS 390 thanh & Ma trận tần suất KCS
 │
+├── run_state_graph.py            # 🌟 ENTRY POINT MỚI: State Graph & Supervisor Runner v3.0
 ├── .gitignore                    # Bộ lọc file rác Python, OS và Office lock
 ├── LICENSE                       # Giấy phép bản quyền MIT
 ├── pyproject.toml                # Cấu hình đóng gói chuẩn PEP 621
-├── requirements.txt              # Thư viện phụ thuộc chính (openpyxl, docx, ezdxf...)
+├── requirements.txt              # Thư viện phụ thuộc chính (ortools, openpyxl, ezdxf...)
 └── README.md                     # Tài liệu giới thiệu chính của repository
 ```
 
@@ -221,32 +248,43 @@ cd aec-multiagent-system
 # 2. Cài đặt các gói phụ thuộc Python
 pip install -r requirements.txt
 
-# 3. Chạy chuỗi kiểm toán độc lập trên Workbook 11 Sheet (Audit Score 100/100)
+# 3. [MỚI - KHUYẾN NGHỊ] Khởi chạy Hệ thống Đa tác tử State Graph v3.0 (7 Pha tự động)
+# Tự động điều phối qua AI Supervisor, Quality Gates 1-4, Human Gate & Vòng lặp As-Built:
+python run_state_graph.py
+
+# 4. Chạy State Graph với chế độ Kỹ sư trưởng phê duyệt trực tiếp (Human Gate CLI):
+python run_state_graph.py --human-gate cli
+
+# 5. Kiểm tra Solver Cắt thép 1D (Google OR-Tools) & Bộ tính đường găng CPM:
+python run_state_graph.py --solver-test
+
+# 6. Trải nghiệm tính năng So sánh Phiên bản Bản vẽ CAD (Rev00 vs Rev01 Incremental Diff):
+python examples/run_cad_diff_demo.py
+
+# 7. [Tương thích ngược] Chạy kiểm toán độc lập trên Workbook Master (Audit Score 100/100):
 python examples/run_pipeline.py
-
-# 4. Trích xuất Bar Bending Schedule (BBS) và Ma trận tần suất KCS
-python examples/add_rebar_bbs_and_mix_sheets.py
-
-# 5. Xuất trọn bộ 22 Biên bản nghiệm thu KCS có ma trận logic ngày ra tệp Word (.docx)
-python examples/generate_kcs_word_package.py
-```
 ```
 
 ---
 
-## 🏆 6. Chi tiết 9 Sheet Bảng tính Mẫu Hoàn thiện (Templates Deliverables)
+## 🏆 6. Chi tiết 14 Sheet Bảng tính Mẫu Hoàn thiện (Templates Deliverables)
 
-Tệp Excel Master: **[`templates/Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx`](templates/Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx)** gồm **9 Sheet** liên thông 100% công thức động:
+Tệp Excel Master: **[`templates/Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx`](templates/Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx)** gồm **14 Sheet** liên thông 100% công thức động (0 số chết, 0 link gãy):
 
-1. **`TO_HOP_CAT_THEP_11M7`**: Tổ hợp cắt thép thanh 11.7m theo bài toán 1D Cutting Stock, đề-xê hao hụt đạt **1.44%** (< 1.5%).
-2. **`KHOI_LUONG_DAO_DAP`**: Thể tích đào đắp trắc ngang $V = \frac{F_1 + F_2}{2} \times L$.
-3. **`QS_DIEN_GIAI_CHI_TIET`**: Bóc tách hình học 100% công thức động Dài x Rộng x Cao x Số lượng x Hệ số, CẤM SỐ CHẾT.
-4. **`TONG_HOP_DU_TOAN_GXD`**: Tổng hợp kinh phí xây dựng Thông tư 11/2021/TT-BXD ($G_{XD} = 15.352$ tỷ VNĐ).
-5. **`THANH_TOAN_KY_PHU_LUC_03A`**: Bảng xác định giá trị khối lượng công việc hoàn thành đề nghị thanh toán theo Nghị định 99/2021/NĐ-CP.
-6. **`TIEN_DO_THI_CONG_WBS`**: 36 công tác WBS, định mức nhân công TT 12/2021, biểu đồ Gantt Chart CPM.
-7. **`HOSO_KCS_NGHIEM_THU`**: 22 Biên bản nghiệm thu KCS theo Nghị định 207/2026/NĐ-CP đồng bộ ngày tháng.
-8. **`PHAN_TICH_VAT_TU_WBS`** *(MỚI)*: Phân tích định mức chi tiết vật liệu cấu thành cho từng hạng mục công tác WBS theo Thông tư 12/2021/TT-BXD (Xi măng, cát, đá, sắt thép từng loại $\varnothing$, cáp DƯL, gối chậu, khe co giãn...).
-9. **`TONG_HOP_VAT_TU_TOAN_BO`** *(MỚI)*: Bảng tổng hợp toàn bộ nhu cầu vật liệu toàn công trình (BOM) bằng công thức `=SUMIF` động, tính khối lượng cung ứng có hệ số hao hụt thi công và phân bổ theo 4 giai đoạn cấp hàng công trường.
+1. **`TO_HOP_CAT_THEP_11M7`**: Tổ hợp cắt thép thanh 11.7m theo bài toán 1D Cutting Stock (Google OR-Tools CP-SAT), đề-xê hao hụt đạt **1.44%** (< 1.5%).
+2. **`KHOI_LUONG_DAO_DAP`**: Thể tích đào đắp trắc ngang $V = \frac{F_1 + F_2}{2} \times L$ (link trực tiếp sang QS!J33).
+3. **`QS_DIEN_GIAI_CHI_TIET`**: Bóc tách hình học 100% công thức động Dài x Rộng x Cao x Số lượng x Hệ số, trỏ SUMIFS sang BBS.
+4. **`THONG_KE_THEP_CHI_TIET`**: Bar Bending Schedule 396 thanh chi tiết từng cấu kiện (Cọc D1200, Mố M1/M2, Trụ T1/T2, Dầm Super-T, Mặt cầu).
+5. **`CAP_PHOI_1M3_VA_TAN_SUAT`**: Bảng định mức cấp phối 1m³ bê tông và ma trận 809 phép thử KCS tự động tính toán (`=ROUNDUP(G/H,0)`).
+6. **`PHAN_TICH_VAT_TU_WBS`**: Phân tích định mức chi tiết vật liệu cấu thành cho từng hạng mục WBS theo Thông tư 12/2021/TT-BXD.
+7. **`TONG_HOP_VAT_TU_TOAN_BO`**: BOM toàn cầu, tính hao hụt thi công và phân bổ theo 4 giai đoạn cấp hàng công trường bằng `=SUMIF()`.
+8. **`TONG_HOP_DU_TOAN_GXD`**: Tổng hợp kinh phí xây dựng Thông tư 11/2021/TT-BXD và Luật XD 135/2025/QH15 ($G_{XD} = T + GT + TL + VAT\text{ 10\%}$).
+9. **`THANH_TOAN_KY_PHU_LUC_03A`**: Bảng xác định giá trị khối lượng công việc hoàn thành đề nghị thanh toán theo Nghị định 99/2021/NĐ-CP.
+10. **`TIEN_DO_THI_CONG_WBS`**: 36 công tác WBS, định mức nhân công TT 12/2021, biểu đồ Gantt Chart CPM.
+11. **`HOSO_KCS_NGHIEM_THU`**: 22 Biên bản nghiệm thu KCS theo Nghị định 207/2026/NĐ-CP đồng bộ ngày tháng với tiến độ CPM.
+12. **`MAU_BIEN_BAN_KCS`**: Chọn ô `C2` (1-22) tự động nhảy toàn bộ nội dung biên bản A4 chuẩn in ấn (thay thế hoàn toàn Microsoft Word).
+13. **`MAU_BB_NGHIEM_THU_VAT_LIEU`**: Chọn ô `C2` (1-16) tự động nhảy nội dung nghiệm thu vật tư đầu vào, tiêu chuẩn và tổ mẫu.
+14. **`MAU_BB_LAY_MAU_HIEN_TRUONG`**: Chọn mã `C2` và ô ngày đúc `C3` $\rightarrow$ tự động tính ngày nén mẫu $R_7 = C_3+7$ và $R_{28} = C_3+28$.
 
 ---
 

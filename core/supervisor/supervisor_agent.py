@@ -1,0 +1,376 @@
+# -*- coding: utf-8 -*-
+"""
+AI SUPERVISOR — Chỉ huy trưởng ảo của AEC MultiAgent System
+Điều phối State Graph: giao việc cho Sub-Agent, kiểm tra Quality Gate,
+xử lý REJECT/RETRY, và kích hoạt Human Gate trước khi xuất tài liệu pháp lý.
+
+Kiến trúc State Graph:
+  INIT
+    ↓
+  CAD_TAKEOFF   ← cad_agent.execute()
+    ↓ Quality Gate 1
+  REBAR_CUT     ← rebar_agent.execute() → BPTC splice check → REJECT/RETRY
+    ↓ Quality Gate 2
+  QS_ESTIMATE   ← qs_agent.execute()
+    ↓ Quality Gate 3
+  QAQC_REVIEW   ← bptc_kcs_agent.execute() + Excel Audit 100/100
+    ↓ Human Gate (AWAITING_APPROVAL)
+  SCHEDULE_CPM  ← scheduler_agent.execute()
+    ↓
+  ASBUILT_LOOP  ← asbuilt_agent.execute() [daily loop]
+    ↓
+  COMPLETED
+
+Mọi nhánh lỗi → ERROR state → Supervisor quyết định retry hoặc escalate.
+"""
+
+from __future__ import annotations
+import os
+import sys
+import time
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Type
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+from core.state.shared_state import ProjectSharedState, NodeStatus, ProjectPhase
+from core.state.state_bus import StateBus
+from core.gates.quality_gate import QualityGate
+from core.gates.human_gate import HumanGate, ApprovalRequest
+from core.supervisor.base_agent import BaseAgent
+
+
+class AECSupervisor:
+    """
+    AI Supervisor (Chỉ huy trưởng ảo) — quản lý toàn bộ State Graph.
+
+    Supervisor KHÔNG tự thực hiện nghiệp vụ kỹ thuật.
+    Supervisor CHỈ:
+      1. Gọi Sub-Agent đúng thứ tự
+      2. Kiểm tra Quality Gate sau mỗi phase
+      3. Xử lý REJECT (retry hoặc escalate)
+      4. Kích hoạt Human Gate trước tài liệu pháp lý
+      5. Cập nhật State Bus
+    """
+
+    def __init__(
+        self,
+        project_root: str = _ROOT,
+        excel_master_path: str = "",
+        drawings_folder: str = "",
+        human_gate_mode: str = "auto",   # "cli" trong production
+        max_retries: int = 3,
+        persist_path: Optional[str] = None,
+    ):
+        self.project_root = project_root
+        self.max_retries = max_retries
+
+        # Khởi tạo State
+        state = ProjectSharedState(
+            max_retries=max_retries,
+            excel_master_path=excel_master_path,
+            drawings_folder=drawings_folder,
+        )
+        persist = persist_path or os.path.join(project_root, "agents", "RUNTIME_STATE.json")
+        self.bus = StateBus(state, persist_path=persist)
+
+        # Gates
+        self.quality_gate = QualityGate(project_root)
+        self.human_gate = HumanGate(mode=human_gate_mode)
+
+        # Agent registry — Supervisor điền vào trước khi chạy
+        self._agents: Dict[str, BaseAgent] = {}
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # AGENT REGISTRY
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def register_agent(self, agent: BaseAgent) -> None:
+        """Đăng ký Sub-Agent vào Supervisor. Gọi trước run()."""
+        self._agents[agent.agent_id] = agent
+        print(f"  [Supervisor] Đăng ký agent: {agent.agent_id} ({agent.description})")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # MAIN ORCHESTRATION LOOP
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def run(self, phases: Optional[List[str]] = None) -> bool:
+        """
+        Chạy toàn bộ State Graph hoặc chỉ các phase được chỉ định.
+        Returns True nếu hoàn thành thành công.
+        """
+        print("\n" + "═" * 65)
+        print("  🏗  AEC SUPERVISOR — STATE GRAPH ORCHESTRATOR")
+        print(f"  Dự án: {self.bus._state.project_name}")
+        print(f"  Session: {self.bus._state.session_id}")
+        print("═" * 65 + "\n")
+
+        # Mặc định chạy tất cả phase
+        all_phases = [
+            ProjectPhase.CAD_TAKEOFF,
+            ProjectPhase.REBAR_CUT,
+            ProjectPhase.QS_ESTIMATE,
+            ProjectPhase.QAQC_REVIEW,
+            ProjectPhase.HUMAN_GATE,
+            ProjectPhase.SCHEDULE_CPM,
+            ProjectPhase.ASBUILT_LOOP,
+        ]
+        run_phases = phases if phases else all_phases
+
+        for phase in run_phases:
+            success = self._run_phase(phase)
+            if not success:
+                self.bus.set_phase(ProjectPhase.ERROR)
+                print(f"\n  ✗ SUPERVISOR: Dừng tại phase {phase} — xem log để biết chi tiết")
+                self.bus.print_status_board()
+                return False
+
+        self.bus.set_phase(ProjectPhase.COMPLETED)
+        self.bus.print_status_board()
+        print("\n  ✅ SUPERVISOR: Hoàn tất toàn bộ State Graph!")
+        return True
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # PHASE HANDLERS
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def _run_phase(self, phase: str) -> bool:
+        """Dispatch sang đúng handler cho từng phase."""
+        print(f"\n{'─' * 60}")
+        print(f"  ▶ Phase: {phase}")
+        print(f"{'─' * 60}")
+        self.bus.set_phase(phase)
+
+        if phase == ProjectPhase.CAD_TAKEOFF:
+            return self._phase_cad_takeoff()
+        elif phase == ProjectPhase.REBAR_CUT:
+            return self._phase_rebar_cut()
+        elif phase == ProjectPhase.QS_ESTIMATE:
+            return self._phase_qs_estimate()
+        elif phase == ProjectPhase.QAQC_REVIEW:
+            return self._phase_qaqc_review()
+        elif phase == ProjectPhase.HUMAN_GATE:
+            return self._phase_human_gate()
+        elif phase == ProjectPhase.SCHEDULE_CPM:
+            return self._phase_schedule_cpm()
+        elif phase == ProjectPhase.ASBUILT_LOOP:
+            return self._phase_asbuilt_loop()
+        else:
+            print(f"  [Supervisor] Phase không xác định: {phase}")
+            return False
+
+    def _phase_cad_takeoff(self) -> bool:
+        success = self._run_agent_with_retry("cad_agent", max_retries=self.max_retries)
+        if not success:
+            return False
+
+        # Quality Gate 1
+        cad_dict = self.bus.get_cad_data().__dict__ if hasattr(self.bus.get_cad_data(), "__dict__") else {}
+        passed, results = self.quality_gate.run_phase_gate(
+            "CAD_TAKEOFF", {"cad_data": cad_dict}
+        )
+        self._print_gate_results("GATE-1: CAD Takeoff", results)
+
+        if not passed:
+            # Một lần retry toàn bộ CAD
+            print("  [Supervisor] Gate-1 FAIL → Retry cad_agent...")
+            success = self._run_agent_with_retry("cad_agent", max_retries=1)
+            if not success:
+                return False
+        return True
+
+    def _phase_rebar_cut(self) -> bool:
+        splice_violations: list = []  # Khởi tạo trước vòng lặp để tránh UnboundLocalError
+        for attempt in range(1, self.max_retries + 1):
+            print(f"  [Supervisor] Rebar attempt {attempt}/{self.max_retries}")
+            success = self._run_agent_with_retry("rebar_agent", max_retries=1)
+            if not success:
+                continue
+
+            # Inter-agent negotiation: đọc kết quả từ StateBus
+            rebar = self.bus.get_rebar_data()
+            splice_status = getattr(rebar, "splice_zone_check", "NOT_RUN")
+            splice_violations = getattr(rebar, "splice_violations", [])
+
+            # Đọc cutting_dict: dùng get_cutting_dict() lấy dict thuần đã lưu
+            cutting_dict = self.bus.get_cutting_dict()
+            if not cutting_dict:
+                # fallback: thử đọc từ object
+                cr = getattr(rebar, "cutting_result", None)
+                if cr is not None:
+                    cutting_dict = cr.__dict__ if hasattr(cr, "__dict__") else {}
+
+            passed, results = self.quality_gate.run_phase_gate(
+                "REBAR_CUT",
+                {
+                    "cutting_result": cutting_dict,
+                    "splice_status": splice_status,
+                    "splice_violations": splice_violations,
+                }
+            )
+            self._print_gate_results(f"GATE-2: Rebar Cut (attempt {attempt})", results)
+
+            if passed:
+                return True
+
+            # REJECT → Supervisor gửi thông báo REJECTED về rebar_agent
+            self.bus.update_node_status(
+                "rebar_agent", NodeStatus.REJECTED,
+                error_message=f"Gate-2 REJECT attempt {attempt}: splice violations={len(splice_violations)}"
+            )
+            print(f"  [Supervisor] REJECTED — rebar_agent sẽ chạy lại (attempt {attempt + 1})")
+
+        # Hết retry → escalate lên Human Gate tự động
+        print("  [Supervisor] Rebar FAILED sau tất cả retry — escalate lên Human Gate")
+        self.bus.create_approval_gate(
+            gate_id="REBAR-ESCALATE",
+            gate_name="Xác nhận thủ công kết quả cắt thép (hết retry)",
+            clashes=[f"Splice violation {i+1}" for i in range(len(splice_violations))]
+        )
+        return False
+
+    def _phase_qs_estimate(self) -> bool:
+        success = self._run_agent_with_retry("qs_agent", max_retries=self.max_retries)
+        if not success:
+            return False
+
+        qs = self.bus.get_qs_data()
+        qs_dict = qs.__dict__ if hasattr(qs, "__dict__") else {}
+
+        passed, results = self.quality_gate.run_phase_gate(
+            "QS_ESTIMATE", {"qs_data": qs_dict}
+        )
+        self._print_gate_results("GATE-3: QS Estimate", results)
+        return passed
+
+    def _phase_qaqc_review(self) -> bool:
+        success = self._run_agent_with_retry("bptc_kcs_agent", max_retries=self.max_retries)
+        if not success:
+            return False
+
+        # Excel Audit — chỉ chạy EXCEL_AUDIT_GATE (không cần QS check lại)
+        excel_path = self.bus._state.excel_master_path
+        if excel_path and os.path.exists(excel_path):
+            audit_result = self.quality_gate.check_excel_audit(excel_path)
+            self._print_gate_results("GATE-4: Excel Audit 100/100", [audit_result])
+            return audit_result.passed
+        else:
+            print("  [Supervisor] WARN: Excel master path không tìm thấy — bỏ qua Excel Audit")
+            return True
+
+    def _phase_human_gate(self) -> bool:
+        """
+        Cổng phê duyệt Human-in-the-loop trước khi xuất tài liệu pháp lý.
+        Hiển thị tất cả clash và anomaly để KS trưởng xem xét.
+        """
+        qaqc = self.bus.get_qaqc_data()
+        clashes = getattr(qaqc, "clashes_detected", [])
+        errors = self.bus.get_errors()
+
+        qs = self.bus.get_qs_data()
+        summary = {
+            "G_XD (VNĐ)": f"{getattr(qs, 'total_G_XD_vnd', 0):,.0f}",
+            "VAT 10%": f"{getattr(qs, 'vat_vnd', 0):,.0f}",
+            "Audit score": f"{getattr(qaqc, 'audit_score', 0)}/100",
+            "Số lỗi hệ thống": len(errors),
+        }
+
+        req = ApprovalRequest(
+            gate_id="LEGAL-DOCS-APPROVAL",
+            gate_name="Phê duyệt xuất tài liệu pháp lý",
+            phase=ProjectPhase.HUMAN_GATE,
+            document_ref=self.bus._state.excel_master_path,
+            clashes=clashes,
+            anomalies=errors[:5],
+            summary_data=summary,
+        )
+
+        self.bus.create_approval_gate(
+            gate_id=req.gate_id,
+            gate_name=req.gate_name,
+            document_ref=req.document_ref,
+            clashes=clashes,
+        )
+        self.bus.update_node_status("supervisor", NodeStatus.AWAITING,
+                                    output_summary="Chờ phê duyệt KS trưởng")
+
+        decision = self.human_gate.request_approval(req)
+
+        self.bus.resolve_approval_gate(
+            gate_id=req.gate_id,
+            approved=decision.approved,
+            approver=decision.approver,
+            comments=decision.comments,
+        )
+
+        if decision.approved:
+            print(f"\n  ✅ Human Gate APPROVED bởi {decision.approver}: {decision.comments}")
+            self.bus.update_node_status("supervisor", NodeStatus.RUNNING,
+                                        output_summary="Tiếp tục sau approval")
+            return True
+        else:
+            print(f"\n  ✗ Human Gate REJECTED bởi {decision.approver}: {decision.comments}")
+            return False
+
+    def _phase_schedule_cpm(self) -> bool:
+        return self._run_agent_with_retry("scheduler_agent", max_retries=self.max_retries)
+
+    def _phase_asbuilt_loop(self) -> bool:
+        if "asbuilt_agent" not in self._agents:
+            print("  [Supervisor] asbuilt_agent chưa được đăng ký — bỏ qua As-Built loop")
+            return True
+        return self._run_agent_with_retry("asbuilt_agent", max_retries=1)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # HELPERS
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def _run_agent_with_retry(self, agent_id: str, max_retries: int = 3) -> bool:
+        """Chạy agent với retry logic. Trả về True nếu thành công."""
+        agent = self._agents.get(agent_id)
+        if agent is None:
+            print(f"  [Supervisor] WARN: Agent '{agent_id}' chưa được đăng ký — bỏ qua")
+            self.bus.update_node_status(agent_id, NodeStatus.SKIPPED,
+                                        output_summary="Agent chưa đăng ký")
+            return True  # Non-fatal: cho phép pipeline tiếp tục
+
+        for attempt in range(1, max_retries + 1):
+            print(f"\n  → Gọi {agent_id} (lần {attempt}/{max_retries})")
+            success = agent.execute(self.bus)
+            if success:
+                return True
+
+            status = self.bus.get_node_status(agent_id)
+            if status == NodeStatus.FAILED and attempt < max_retries:
+                wait_s = 2 ** attempt  # Exponential backoff
+                print(f"  [Supervisor] {agent_id} FAILED — retry sau {wait_s}s...")
+                time.sleep(wait_s)
+
+        print(f"  [Supervisor] {agent_id} FAILED sau {max_retries} lần thử")
+        return False
+
+    def _print_gate_results(self, gate_label: str, results: list) -> None:
+        print(f"\n  {'─'*50}")
+        print(f"  🔍 {gate_label}")
+        for r in results:
+            icon = "✓" if r.passed else "✗"
+            print(f"  {icon} {r.gate_name}: {r.score}/{r.max_score}")
+            for issue in r.issues:
+                print(f"      ✗ {issue}")
+            for warn in r.warnings:
+                print(f"      ⚠ {warn}")
+        print(f"  {'─'*50}")
+
+    def get_status_report(self) -> Dict[str, Any]:
+        """Trả về báo cáo trạng thái toàn hệ thống."""
+        snap = self.bus.get_state_snapshot()
+        return {
+            "session_id": snap.get("session_id"),
+            "phase": snap.get("current_phase"),
+            "updated_at": snap.get("updated_at"),
+            "node_status": snap.get("node_status", {}),
+            "errors_count": len(snap.get("global_errors", [])),
+            "pending_approvals": len(self.bus.get_pending_gates()),
+        }

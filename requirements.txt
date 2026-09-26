@@ -12,6 +12,17 @@ python-dotenv>=1.0.0
 # XML parsing (for MS Project .xml export)
 lxml>=5.0.0
 
+# ── State Graph v3.0 — Bổ sung ──────────────────────────────────────────────
+
+# OR-Tools: 1D Cutting Stock Solver (CP-SAT, LP, ILP)
+# Dùng trong: tools/cutting_stock_solver.py
+ortools>=9.0.0
+
+# Pandas + dateutil: CPM Calculator date mapping
+# Dùng trong: tools/cpm_calculator.py
+pandas>=2.0.0
+python-dateutil>=2.9.0
+
 # Optional: Hugging Face & RAG modules
 # sentence-transformers>=3.0.0
 # huggingface-hub>=0.24.0
