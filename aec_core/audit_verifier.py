@@ -49,7 +49,13 @@ class AECAuditVerifier:
                         self.findings.append(f"CẢNH BÁO SỐ CHẾT: Hàng {r} ({cell_c}) cột J không dùng công thức sống: {cell_j}")
                         self.stats["dead_numbers_found"] += 1
                         self.score -= 5
-                    elif "*F" not in str(cell_j) and "*E" not in str(cell_j):
+                    # Kiem tra cong thuc: E*F*G*H*I hoac cac cong thuc lien ket hop le
+                    is_geometry_formula = "*F" in str(cell_j) or "*E" in str(cell_j)
+                    is_cross_sheet_link = any(s in str(cell_j) for s in [
+                        "KHOI_LUONG_DAO_DAP", "THONG_KE_THEP_CHI_TIET",
+                        "SUMIFS", "SUMIF", "SUM(", "COUNTIFS", "CAP_PHOI"
+                    ])
+                    if not is_geometry_formula and not is_cross_sheet_link:
                         self.findings.append(f"CẢNH BÁO HÌNH HỌC: Hàng {r} ({cell_c}) không theo chuẩn E*F*G*H*I: {cell_j}")
                         self.score -= 2
 

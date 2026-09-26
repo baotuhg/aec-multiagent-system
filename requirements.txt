@@ -6,6 +6,13 @@ python-docx>=1.2.0
 ezdxf>=1.4.0
 numpy>=1.26.0
 
+# Environment & configuration
+python-dotenv>=1.0.0
+
+# XML parsing (for MS Project .xml export)
+lxml>=5.0.0
+
 # Optional: Hugging Face & RAG modules
 # sentence-transformers>=3.0.0
 # huggingface-hub>=0.24.0
+# transformers>=4.40.0

@@ -1,5 +1,30 @@
 # -*- coding: utf-8 -*-
 """
+[DEPRECATED - KHONG SU DUNG] generate_kcs_word_package.py
+==========================================================
+FILE NAY DA BI THAY THE HOAN TOAN BOI HE THONG EXCEL A4:
+  - Sheet 12: MAU_BIEN_BAN_KCS (Bien ban nghiem thu cong viec)
+  - Sheet 13: MAU_BB_NGHIEM_THU_VAT_LIEU (Bien ban nghiem thu vat lieu)
+  - Sheet 14: MAU_BB_LAY_MAU_HIEN_TRUONG (Bien ban lay mau hien truong)
+
+Huong dan: Mo file Excel Master -> Chon so bien ban o o C2 -> In A4
+Chinh sach: KHONG DUNG WORD trong he thong nay (Quyet dinh 2026-09-26)
+
+De chay lai he thong Excel A4:
+  python examples/update_full_cross_linked_workbook.py
+"""
+import warnings
+warnings.warn(
+    "[DEPRECATED] generate_kcs_word_package.py da bi thay the boi 3 Sheet Excel A4. "
+    "Su dung templates/Ho_So_KCS_QS_TienDo_Cau_Km19+529.080.xlsx",
+    DeprecationWarning, stacklevel=2
+)
+
+# Code goc duoi day chi giu lai de tham khao, KHONG chay trong production
+
+# === CODE GOC (CHI DE THAM KHAO) ===
+# -*- coding: utf-8 -*-
+"""
 MÔ-ĐUN MỤC 5: KIỂM SOÁT LOGIC NGÀY THÁNG CHÉO & XUẤT TRỌN BỘ 22 BIÊN BẢN NGHIỆM THU KCS RA FILE WORD (.DOCX)
 Tuân thủ Luật Xây dựng số 135/2025/QH15 & Nghị định 207/2026/NĐ-CP.
 """
