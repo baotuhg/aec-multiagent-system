@@ -72,6 +72,37 @@ def build_full_cross_linked_workbook(excel_path):
         ws_qs.cell(66, 10).number_format = "#,##0.000"
 
     # =========================================================================
+    # A2. LIÊN KẾT TO_HOP_CAT_THEP_11M7: CỘT D (SỐ LƯỢNG THANH) TRỎ VÀO BBS
+    # Mục tiêu: Cột D = COUNTIFS(BBS!$E$6:$E$399, đường_kính, BBS!$B$6:$B$399, "*tên_kết_cấu*")
+    # =========================================================================
+    if "TO_HOP_CAT_THEP_11M7" in wb.sheetnames:
+        ws_ct = wb["TO_HOP_CAT_THEP_11M7"]
+        print("[*] Đang liên kết số lượng thanh thép (cột D) từ BBS sang TO_HOP_CAT_THEP_11M7...")
+        # Mỗi hàng: D = COUNTIFS dựa trên Đường kính (col C) và mô tả kết cấu (col B)
+        # Dùng chuỗi wildcard theo tên cấu kiện để COUNTIFS tự động đếm từ BBS
+        ct_links = [
+            (6,  25, "*Cọc khoan nhồi*"),
+            (7,  16, "*đai tăng cường cọc*"),
+            (8,  10, "*đai xoắn*"),
+            (9,  32, "*đáy bệ móng*"),
+            (10, 20, "*phân bố bệ*"),
+            (11, 28, "*thân mố*"),
+            (12, 32, "*thân đặc trụ*"),
+            (13, 28, "*xà mũ trụ*"),
+            (14, 16, "*thường dầm Super-T*"),
+            (15, 14, "*thường dầm Super-T*"),
+            (16, 16, "*dầm ngang*"),
+            (17, 16, "*bản mặt cầu*"),
+            (18, 14, "*bản mặt cầu*"),
+            (19, 16, "*bản quá độ*"),
+        ]
+        for (r, dia, kw) in ct_links:
+            ws_ct.cell(r, 4, value=(
+                f'=COUNTIFS(THONG_KE_THEP_CHI_TIET!$E$6:$E$399,{dia},'
+                f'THONG_KE_THEP_CHI_TIET!$B$6:$B$399,"{kw}")'
+            ))
+
+    # =========================================================================
     # B. CẬP NHẬT SHEET CAP_PHOI_1M3_VA_TAN_SUAT: 100% CÔNG THỨC ĐỘNG NHÂN CHIA
     # =========================================================================
     if "CAP_PHOI_1M3_VA_TAN_SUAT" in wb.sheetnames:
@@ -87,7 +118,8 @@ def build_full_cross_linked_workbook(excel_path):
         ws_mix.cell(14, 10, value="=QS_DIEN_GIAI_CHI_TIET!J53") # Bê tông xà mũ trụ C35
         ws_mix.cell(15, 10, value="=QS_DIEN_GIAI_CHI_TIET!J73 + QS_DIEN_GIAI_CHI_TIET!J77 + QS_DIEN_GIAI_CHI_TIET!J79") # Bản mặt cầu, dầm ngang, LTN C35
         ws_mix.cell(16, 10, value="=QS_DIEN_GIAI_CHI_TIET!J62") # Bê tông dầm Super-T C45
-        ws_mix.cell(17, 10, value=4.674) # Bê tông chèn khe co giãn C40
+        # [FIX LỖI] R17: Trỏ thể tích vữa chèn khe co giãn C40 trực tiếp từ QS (không dùng số chết 4.674)
+        ws_mix.cell(17, 10, value="=QS_DIEN_GIAI_CHI_TIET!J86")  # Vữa chèn khe không co ngót C40
 
         # Công thức nhân chia định mức 1m3 (Hàng 9 đến 17):
         for r in range(9, 18):
@@ -126,11 +158,13 @@ def build_full_cross_linked_workbook(excel_path):
         ws_mix.cell(34, 7, value="=SUMIFS(THONG_KE_THEP_CHI_TIET!$O$6:$O$399, THONG_KE_THEP_CHI_TIET!$E$6:$E$399, 15.2)")   # TT 11: Cáp 15.2
 
         # Vật liệu cấu thành bê tông trỏ trực tiếp dòng tổng Bảng 1 (Hàng 35 - 39)
-        ws_mix.cell(35, 7, value="=K18") # TT 12: Xi măng PCB40 (Tấn)
-        ws_mix.cell(36, 7, value="=L18") # TT 13: Cát vàng (m3)
-        ws_mix.cell(37, 7, value="=M18") # TT 14: Đá dăm 1x2 (m3)
-        ws_mix.cell(38, 7, value=1.0)    # TT 15: Nguồn nước
-        ws_mix.cell(39, 7, value=3.0)    # TT 16: Phụ gia (3 lô)
+        ws_mix.cell(35, 7, value="=K18") # TT 12: Xi măng PCB40 (Tấn) → Σ Bảng 1 K18
+        ws_mix.cell(36, 7, value="=L18") # TT 13: Cát vàng (m3) → Σ Bảng 1 L18
+        ws_mix.cell(37, 7, value="=M18") # TT 14: Đá dăm 1x2 (m3) → Σ Bảng 1 M18
+        # [FIX LỖI] R38 Nước: Trỏ sang N18 (Σ nước tổng) thay vì số chết 1
+        ws_mix.cell(38, 7, value="=N18") # TT 15: Nước sạch (m3) → Σ Bảng 1 N18
+        # [FIX LỖI] R39 Phụ gia: Trỏ sang O18 (Σ phụ gia tổng) thay vì số chết 3
+        ws_mix.cell(39, 7, value="=O18") # TT 16: Phụ gia (lít) → Σ Bảng 1 O18
 
         # Mẫu nén hiện trường trỏ thể tích bê tông từng hạng mục (Hàng 40 - 49)
         ws_mix.cell(40, 7, value="=ROUNDUP(J18/8, 0)") # TT 17: Đo độ sụt xe bồn
@@ -574,7 +608,7 @@ def build_full_cross_linked_workbook(excel_path):
 
     print(f"[*] Đang lưu file Excel Master cập nhật hoàn chỉnh: {excel_path}")
     wb.save(excel_path)
-    print(f"[V] Thành công! Toàn bộ hệ thống 12 Sheet đã liên kết động 100% không số chết!")
+    print(f"[V] Thành công! Toàn bộ hệ thống 14 Sheet đã liên kết động 100% không số chết!")
     return wb.sheetnames
 
 if __name__ == "__main__":
