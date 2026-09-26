@@ -5,11 +5,24 @@ description: Tự động hóa điều khiển AutoCAD/CAD trực tiếp qua gia
 
 # Tự động hóa CAD & Đo bóc Khối lượng Mặt cắt ngang (AEC-CAD)
 
-## 1. Mục tiêu
+## 1. Mục tiêu & Kiến Trúc Hệ Thống MCP 3 Thành Phần
+
+```text
+[ Giao diện AI: Claude Desktop / Windsurf / Cursor / Antigravity ]
+                               │
+                               ▼ (Giao thức MCP: cad-mcp / autocad-mcp)
+               [ MCP Server điều khiển AutoCAD (Local) ]
+                               │
+                               ▼ (API / COM Interop: win32com / ezdxf)
+      [ Bản vẽ DWG trong AutoCAD ] <───> [ Hồ sơ thiết kế (Excel/PDF) ]
+```
+
 Cung cấp khả năng cho AI Agent tương tác trực tiếp 2 chiều với phần mềm AutoCAD (AutoCAD 2026/GstarCAD) thông qua giao thức MCP:
-- Đọc thông tin bản vẽ đang mở: Danh sách layer, blocks, text, dim, polyline.
+- Đọc thông tin bản vẽ đang mở: Danh sách layer, blocks, text (giải mã TCVN3 sang Unicode), dim, polyline.
+- Quét hàng loạt bản vẽ DWG trong thư mục hồ sơ: Tự động phân loại cấu kiện theo Modular WBS (Cọc, Mố, Trụ, Dầm, Bản mặt cầu, Lan can, Đào đắp).
+- Đối soát 2 chiều: So khớp dữ liệu kích thước hình học từ CAD với bảng tiên lượng khối lượng Excel BoQ và thuyết minh Markdown.
 - Vẽ trực tiếp hình học (đường nét, hình học phức tạp, trích xuất mặt cắt, chi tiết cấu kiện) lên viewport AutoCAD.
-- Đo bóc khối lượng hình học: Tự động tính diện tích khép kín, bóc tách mặt cắt ngang đào/đắp nền đường, móng kè, công trình cống.
+- Đo bóc khối lượng hình học: Tự động tính diện tích khép kín (Shoelace), bóc tách mặt cắt ngang đào/đắp nền đường, móng kè, công trình cống.
 
 ## 2. Công cụ MCP khả dụng
 

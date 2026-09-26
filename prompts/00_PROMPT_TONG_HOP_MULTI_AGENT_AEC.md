@@ -31,7 +31,11 @@ Khi nhận được yêu cầu và hồ sơ dự án này, bạn hãy tự độ
   - Nếu là Giao thông: Tách móng mố trụ, kết cấu nhịp dầm T/Super-T, tường chắn taluy, đường đầu cầu.
   - Nếu là Dân dụng: Tách 4 sheet QS con (Phần ngầm móng, Kết cấu khung thân, Hoàn thiện kiến trúc, Cơ điện MEP & Giàn giáo).
 
-* BƯỚC 2 (aec_vision_takeoff & aec_rebar_engineer):
+* BƯỚC 2 (aec_cad_extractor & aec_vision_takeoff & aec_rebar_engineer):
+  - Kích hoạt KIẾN TRÚC HỆ THỐNG MCP 3 THÀNH PHẦN để đọc hiểu bản vẽ CAD:
+    + Tầng 1: Giao diện AI điều phối lệnh đọc bản vẽ qua giao thức MCP (cad-mcp, autocad-mcp).
+    + Tầng 2: MCP Server Local nhận lệnh và tương tác với tiến trình CAD.
+    + Tầng 3 (COM Interop & Tệp bản vẽ): Nếu AutoCAD đang mở, kết nối trực tiếp qua COM API đọc ModelSpace. Nếu trong folder hồ sơ có thêm hàng loạt file bản vẽ (.dwg, .dxf), tự động quét đệ quy toàn bộ thư mục, phân loại cấu kiện theo WBS, giải mã font TCVN3 sang Unicode và đối soát 2 chiều với Hồ sơ thiết kế (Excel BoQ / Markdown).
   - aec_vision_takeoff: Đọc bản vẽ PDF/DWG, đếm số lượng cấu kiện, trích xuất kích thước hình học L, W, H và trắc ngang đào đắp.
   - aec_rebar_engineer: Đọc bảng thống kê thép, ghép tối ưu vào cây thép nguyên 11.7m, khống chế đề-xê < 1.5%, tính số cây 11.7m và tổng trọng lượng thép (kg).
 

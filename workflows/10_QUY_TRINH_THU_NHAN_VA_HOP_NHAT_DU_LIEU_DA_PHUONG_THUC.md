@@ -22,7 +22,37 @@ Nếu để các tác tử nghiệp vụ (Cắt thép 1D, Dự toán G_XD, Lập
 
 ---
 
-## 2. Giải pháp Kiến trúc Phân tầng 3 Lớp (3-Tier Ingestion & Fusion Architecture)
+---
+
+## 2. ⚙️ Kiến Trúc Hệ Thống MCP 3 Thành Phần (3-Tier MCP Architecture)
+
+Để giải quyết bài toán đọc hiểu bản vẽ khi trong thư mục hồ sơ có thêm hàng chục đến hàng trăm bản vẽ kỹ thuật, hệ thống thiết lập kiến trúc 3 tầng chuẩn hóa:
+
+```text
+[ Giao diện AI: Claude Desktop / Windsurf / Cursor / Antigravity ]
+                               │
+                               ▼ (Giao thức MCP: cad-mcp / autocad-mcp)
+               [ MCP Server điều khiển AutoCAD (Local) ]
+                               │
+                               ▼ (API / COM Interop: win32com / ezdxf)
+      [ Bản vẽ DWG trong AutoCAD ] <───> [ Hồ sơ thiết kế (Excel/PDF/MD) ]
+```
+
+### Chi tiết 3 tầng hoạt động:
+1. **Tầng 1 - Giao diện AI (AI Client Interface):**
+   - Các nền tảng trợ lý AI chuyên gia: Google Antigravity, Claude Desktop, Cursor, Windsurf.
+   - Tiếp nhận lệnh từ kỹ sư, điều phối tác tử và gửi yêu cầu truy vấn bản vẽ qua giao thức mở MCP.
+2. **Tầng 2 - MCP Server Cục bộ (Local MCP Server Bridge):**
+   - Đóng vai trò cầu nối chuẩn hóa (chạy các server như `cad-mcp` hoặc `autocad-mcp`).
+   - Cung cấp các công cụ: `smart_cad_command`, `batch_execute`, `query_api_commands`, `list_open_drawings`, `list_layers`.
+3. **Tầng 3 - Tương tác AutoCAD & Tệp Bản vẽ DWG (API / COM Interop):**
+   - **Chế độ Phiên hoạt động (Active Session):** Kết nối trực tiếp vào phần mềm AutoCAD đang mở trên máy tính qua COM Interop (`win32com.client.Dispatch("AutoCAD.Application")`), đọc đối tượng từ `ModelSpace` (Text, MText, Polyline, Block, Dim).
+   - **Chế độ Quét đệ quy (Batch Drawing Folder Scanner):** Khi trong thư mục dự án có thêm hàng loạt bản vẽ mới, tác tử tự động duyệt toàn bộ cây thư mục (`os.walk`), phân loại từng bản vẽ theo WBS (Cọc, Mố, Trụ, Dầm Super-T, Mặt cầu, Lan can, Đào đắp...).
+   - **Đối soát 2 chiều (`<───>`):** Tự động so khớp dữ liệu hình học và bảng thống kê thép (BBS) trích từ bản vẽ DWG với các bảng tính khối lượng (Excel BoQ) và Thuyết minh kỹ thuật (Markdown/PDF), phát hiện ngay nếu có sai lệch kích thước hay mác vật liệu.
+
+---
+
+## 3. Sơ đồ Luồng Dữ liệu Hợp nhất Đa phương thức
 
 ```
 [Bản vẽ CAD DWG/DXF]       [Bảng tính Excel/Word]       [Hồ sơ Thuyết minh Markdown]
@@ -61,7 +91,7 @@ Nếu để các tác tử nghiệp vụ (Cắt thép 1D, Dự toán G_XD, Lập
 
 ---
 
-## 3. Đặc tả Nhiệm vụ 4 Tác tử Thu nhận & Hợp nhất
+## 4. Đặc tả Nhiệm vụ 4 Tác tử Thu nhận & Hợp nhất
 
 ### 3.1. Tác tử `aec_cad_extractor` (Chuyên gia CAD DWG)
 - **Vị trí tệp:** `agents/aec_cad_extractor.py`
